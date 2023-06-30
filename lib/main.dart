@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 void main() {
   runApp(
     const AffogatoWidget(
-      width: 1100,
-      height: 700,
+      width: 1460,
+      height: 820,
       theme: AffogatoWidgetTheme(
-        widgetBackground: Color(0xFF120020),
-        editorBackground: Color(0xFF50008f),
+        widgetBackground: Color(0xFF0e001a),
+        editorBackground: Color(0xFF120020),
         primaryColor: Colors.pink,
       ),
     ),

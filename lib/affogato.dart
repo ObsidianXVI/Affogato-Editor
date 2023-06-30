@@ -1,8 +1,10 @@
 library affogato;
 
+import 'package:affogato/core/affogato_core.dart';
 import 'package:flutter/material.dart';
 import './style/style.dart';
 import './components/components.dart';
+import './temp_src.dart';
 
 class AffogatoWidget extends StatefulWidget {
   final double width;
@@ -37,10 +39,11 @@ class AffogatoWidgetState extends State<AffogatoWidget> {
                 Positioned(
                   right: 0,
                   top: 0,
-                  width: widget.width * 0.7,
-                  height: widget.height,
                   child: EditorComponent(
+                    width: widget.width * 0.78,
+                    height: widget.height,
                     theme: widget.theme,
+                    document: AffogatoDocument.fromString(src1),
                   ),
                 )
               ],
