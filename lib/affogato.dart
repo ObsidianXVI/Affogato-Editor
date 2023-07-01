@@ -36,9 +36,14 @@ class AffogatoWidgetState extends State<AffogatoWidget> {
             ),
             child: Stack(
               children: [
+                const Positioned(
+                  top: 0,
+                  left: 0,
+                  child: FileTabNavComponent(),
+                ),
                 Positioned(
                   right: 0,
-                  top: 0,
+                  top: 50,
                   child: EditorComponent(
                     width: widget.width * 0.78,
                     height: widget.height,
