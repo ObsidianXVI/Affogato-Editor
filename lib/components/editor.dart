@@ -4,8 +4,9 @@ class EditorComponent extends AffogatoComponent {
   final AffogatoDocument document;
   final double width;
   final double height;
+  final List<EditorLineComponent> editorLines = [];
 
-  const EditorComponent({
+  EditorComponent({
     required super.theme,
     required this.width,
     required this.height,
@@ -17,6 +18,23 @@ class EditorComponent extends AffogatoComponent {
 }
 
 class EditorState extends State<EditorComponent> {
+  int currentLine = 0;
+  int currentCol = 0;
+
+  void notifyNewlineInsertion(int triggerIndex) {
+    widget.document.sourceLines.insert(triggerIndex + 1, '');
+    currentLine = triggerIndex + 1;
+    currentCol = 0;
+    setState(() {});
+  }
+
+  void notifyNewlineDeletion(int triggerIndex) {
+    widget.document.sourceLines.removeAt(triggerIndex);
+    currentLine = triggerIndex - 1;
+    currentCol = 0;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final int lineCount = widget.document.sourceLines.length;
@@ -80,21 +98,12 @@ class EditorState extends State<EditorComponent> {
                   children: [
                     ...List<Widget>.generate(lineCount, (int i) {
                       return Center(
-                        child: Container(
-                          width: double.infinity,
-                          height: 28,
-                          child: SelectableText.rich(
-                            TextSpan(
-                              text: widget.document.sourceLines[i],
-                              style: TextStyle(
-                                fontSize: 18,
-                                height: 1.4,
-                                fontFamily: 'DMMono',
-                                color: widget.theme.primaryColor,
-                              ),
-                            ),
-                            textAlign: TextAlign.start,
-                          ),
+                        child: EditorLineComponent(
+                          lineNo: i,
+                          initialContent: widget.document.sourceLines[i],
+                          cursorPos: i == currentLine ? currentCol : null,
+                          editor: this,
+                          key: GlobalKey(),
                         ),
                       );
                     }),
