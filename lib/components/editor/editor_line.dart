@@ -19,15 +19,11 @@ class EditorLineComponent extends StatefulWidget {
 }
 
 class EditorLineState extends State<EditorLineComponent> {
-  late final TextEditingController textController;
   String? content;
 
   @override
   void initState() {
     content = widget.initialContent;
-    textController = TextEditingController(
-      text: content,
-    );
     super.initState();
   }
 
@@ -36,7 +32,22 @@ class EditorLineState extends State<EditorLineComponent> {
     return Container(
       width: double.infinity,
       height: 28,
-      child: EditableText(
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (String char in content!.split(''))
+            CharCellComponent(
+              value: char,
+              editorLineState: this,
+            ),
+        ],
+      ),
+
+      /**
+       * 
+       EditableText(
         controller: textController,
         focusNode: FocusNode(),
         autofocus: widget.cursorPos != null,
@@ -54,21 +65,7 @@ class EditorLineState extends State<EditorLineComponent> {
           fontFamily: 'DMMono',
           color: Colors.pink,
         ),
-      ),
-
-      /**
-       * SelectableText.rich(
-        TextSpan(
-          text: content!,
-          style: const TextStyle(
-            fontSize: 18,
-            height: 1.4,
-            fontFamily: 'DMMono',
-            color: Colors.pink,
-          ),
-        ),
-        textAlign: TextAlign.start,
-      ),
+      )
        */
     );
   }
