@@ -25,7 +25,6 @@ class CharCellComponentState extends State<CharCellComponent> {
       Events.cursor.spawnCursorReplacement,
       () {
         if (cursor != null) {
-          print('removing cursor');
           cursor = null;
           widget.editorLineState.setState(() {});
         }
@@ -34,15 +33,19 @@ class CharCellComponentState extends State<CharCellComponent> {
     super.initState();
   }
 
+  void spawnCursor() {
+    Events.cursor.spawnCursorReplacement();
+    cursor = Cursor(
+      charCellComponent: widget,
+    );
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Events.cursor.spawnCursorReplacement();
-        cursor = Cursor();
-
-        print('spawing replacement');
-        setState(() {});
+        spawnCursor();
       },
       child: Stack(
         children: [

@@ -18,21 +18,7 @@ class EditorComponent extends AffogatoComponent {
 }
 
 class EditorState extends State<EditorComponent> {
-  final Cursor cursor = Cursor();
-
-  void notifyNewlineInsertion(int triggerIndex) {
-    widget.document.sourceLines.insert(triggerIndex + 1, '');
-    cursor.currentLine = triggerIndex + 1;
-    cursor.currentCol = 0;
-    setState(() {});
-  }
-
-  void notifyNewlineDeletion(int triggerIndex) {
-    widget.document.sourceLines.removeAt(triggerIndex);
-    cursor.currentLine = triggerIndex - 1;
-    cursor.currentCol = 0;
-    setState(() {});
-  }
+  late final Cursor cursor;
 
   @override
   Widget build(BuildContext context) {
@@ -102,9 +88,6 @@ class EditorState extends State<EditorComponent> {
                           child: EditorLineComponent(
                             lineNo: i,
                             initialContent: widget.document.sourceLines[i],
-                            cursorPos: i == cursor.currentLine
-                                ? cursor.currentCol
-                                : null,
                             editor: this,
                             key: GlobalKey(),
                           ),
