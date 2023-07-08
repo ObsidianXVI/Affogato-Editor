@@ -1,12 +1,12 @@
 part of affogato.components;
 
-class EditorComponent extends AffogatoComponent {
+class AffogatoEditor extends AffogatoComponent {
   final AffogatoDocument document;
   final double width;
   final double height;
   final List<EditorLineComponent> editorLines = [];
 
-  EditorComponent({
+  AffogatoEditor({
     required super.theme,
     required this.width,
     required this.height,
@@ -17,7 +17,7 @@ class EditorComponent extends AffogatoComponent {
   State<StatefulWidget> createState() => EditorState();
 }
 
-class EditorState extends State<EditorComponent> {
+class EditorState extends State<AffogatoEditor> {
   late final Cursor cursor;
 
   @override

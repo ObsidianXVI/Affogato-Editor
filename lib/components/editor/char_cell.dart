@@ -4,10 +4,12 @@ class CharCellComponent extends StatefulWidget {
   final String value;
   final EditorLineState editorLineState;
   final Cursor? initialCursor;
+  final CellStyle cellStyle;
 
   const CharCellComponent({
     required this.value,
     required this.editorLineState,
+    required this.cellStyle,
     this.initialCursor,
     super.key,
   });

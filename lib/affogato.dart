@@ -1,6 +1,6 @@
 library affogato;
 
-import 'package:affogato/core/affogato_core.dart';
+import 'package:affogato/engine/engine.dart';
 import 'package:flutter/material.dart';
 import './style/style.dart';
 import './components/components.dart';
@@ -44,7 +44,7 @@ class AffogatoWidgetState extends State<AffogatoWidget> {
                 Positioned(
                   right: 0,
                   top: 50,
-                  child: EditorComponent(
+                  child: AffogatoEditor(
                     width: widget.width * 0.78,
                     height: widget.height,
                     theme: widget.theme,

@@ -32,6 +32,7 @@ class EditorLineState extends State<EditorLineComponent> {
         CharCellComponent(
           value: char,
           editorLineState: this,
+          cellStyle: CellStyle(),
           key: GlobalKey(),
         ),
     ];

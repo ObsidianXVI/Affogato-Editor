@@ -1,4 +1,4 @@
-part of affogato.core;
+part of affogato.engine;
 
 class AffogatoDocument {
   final List<String> sourceLines;
