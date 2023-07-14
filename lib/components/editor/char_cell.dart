@@ -36,6 +36,7 @@ class CharCellComponentState extends State<CharCellComponent> {
   }
 
   void spawnCursor() {
+    if (cursor != null) return;
     Events.cursor.spawnCursorReplacement();
     cursor = Cursor(
       charCellComponent: widget,
