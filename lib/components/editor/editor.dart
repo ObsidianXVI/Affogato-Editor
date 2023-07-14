@@ -1,5 +1,6 @@
 part of affogato.components;
 
+/// An open text editing instance attached to a single [AffogatoDocument], not to be confused with the EditorArea
 class AffogatoEditor extends AffogatoComponent {
   final AffogatoDocument document;
   final double width;
