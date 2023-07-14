@@ -3,14 +3,15 @@ part of affogato.components;
 class CharCellComponent extends StatefulWidget {
   final String value;
   final EditorState editor;
-  final Cursor? initialCursor;
   final CellStyle cellStyle;
+  final CursorLocation location;
+  final GlobalKey<CharCellComponentState> globalKey = GlobalKey();
 
-  const CharCellComponent({
+  CharCellComponent({
     required this.value,
     required this.editor,
     required this.cellStyle,
-    this.initialCursor,
+    required this.location,
     super.key,
   });
   @override
@@ -18,37 +19,16 @@ class CharCellComponent extends StatefulWidget {
 }
 
 class CharCellComponentState extends State<CharCellComponent> {
-  Cursor? cursor;
-
   @override
   void initState() {
-    cursor = widget.initialCursor;
-    Events.cursor.registerListenerFor<SpawnCursorReplacementCallback>(
-      Events.cursor.spawnCursorReplacement,
-      () {
-        if (cursor != null) {
-          cursor = null;
-          widget.editor.setState(() {});
-        }
-      },
-    );
     super.initState();
-  }
-
-  void spawnCursor() {
-    if (cursor != null) return;
-    Events.cursor.spawnCursorReplacement();
-/*     cursor = Cursor(
-      charCellComponent: widget,
-    ); */
-    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        spawnCursor();
+      onTapDown: (_) {
+        widget.editor.cursor.moveToCell(this);
       },
       child: Stack(
         children: [
@@ -61,12 +41,8 @@ class CharCellComponentState extends State<CharCellComponent> {
               color: Colors.pink,
             ),
           ),
-          if (cursor != null)
-            Positioned(
-              right: 0,
-              bottom: 0,
-              child: cursor!,
-            ),
+          if (widget.editor.cursor.cursorLocation == widget.location)
+            widget.editor.cursor,
         ],
       ),
     );

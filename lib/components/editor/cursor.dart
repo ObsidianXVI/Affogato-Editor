@@ -1,17 +1,26 @@
 part of affogato.components;
 
 class Cursor extends StatefulWidget {
-  const Cursor({
+  CharCellComponentState? currentCell;
+
+  Cursor({
     super.key,
   });
 
   @override
   State<StatefulWidget> createState() => CursorState();
+
+  CursorLocation? get cursorLocation => currentCell?.widget.location;
+
+  void moveToCell(CharCellComponentState newCell) {
+    final CharCellComponentState? oldCell = currentCell;
+    currentCell = newCell;
+    oldCell?.setState(() {});
+    newCell.setState(() {});
+  }
 }
 
 class CursorState extends State<Cursor> {
-  int lineNo = 0;
-  int colNo = 0;
   late final Timer timer;
   Color color = Colors.green;
 
@@ -32,13 +41,16 @@ class CursorState extends State<Cursor> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 400),
-      height: 28,
-      width: 2,
-      curve: Curves.easeIn,
-      decoration: BoxDecoration(
-        color: color,
+    return Align(
+      alignment: Alignment.center,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 400),
+        height: 18,
+        width: 2,
+        curve: Curves.easeIn,
+        decoration: BoxDecoration(
+          color: color,
+        ),
       ),
     );
   }
