@@ -6,6 +6,7 @@ class AffogatoEditor extends AffogatoComponent {
   final double width;
   final double height;
   final List<EditorLineComponent> editorLines = [];
+  final Cursor cursor = const Cursor();
 
   AffogatoEditor({
     required super.theme,
@@ -19,11 +20,32 @@ class AffogatoEditor extends AffogatoComponent {
 }
 
 class EditorState extends State<AffogatoEditor> {
-  late final Cursor cursor;
+  @override
+  void initState() {
+    for (int row = 0; row < widget.document.documentMap.totalLines; row++) {
+      widget.document.documentMap.cells.add(
+        List<CharCellComponent>.generate(
+          widget.document.documentMap.chars[row].length,
+          (int colNo) {
+            return CharCellComponent(
+              value: widget.document.documentMap.charAt(
+                CursorLocation(row: row, col: colNo),
+              ),
+              editor: this,
+              cellStyle: CellStyle(),
+              key: GlobalKey(),
+            );
+          },
+        ),
+      );
+    }
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final int lineCount = widget.document.sourceLines.length;
+    final int lineCount = widget.document.documentMap.totalLines;
     return Container(
       width: widget.width,
       height: widget.height,
@@ -83,18 +105,16 @@ class EditorState extends State<AffogatoEditor> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ...List<Widget>.generate(lineCount, (int i) {
-                        return Center(
-                          child: EditorLineComponent(
-                            lineNo: i,
-                            initialContent: widget.document.sourceLines[i],
-                            editor: this,
-                            key: GlobalKey(),
-                          ),
-                        );
-                      }),
-                    ],
+                    children: List<Widget>.generate(lineCount, (int lineNo) {
+                      return Center(
+                        child: EditorLineComponent(
+                          lineNo: lineNo,
+                          charCells: widget.document.documentMap.cells[lineNo],
+                          editor: this,
+                          key: GlobalKey(),
+                        ),
+                      );
+                    }),
                   ),
                 ),
               ],

@@ -1,34 +1,17 @@
 part of affogato.components;
 
 class Cursor extends StatefulWidget {
-  CharCellComponent charCellComponent;
-  int currentLine = 0;
-  int currentCol = 0;
-
-  Cursor({
-    required this.charCellComponent,
+  const Cursor({
     super.key,
   });
-
-  void notifyNewlineInsertion() {
-/*     charCellComponent.editorLineState.document.sourceLines.insert(triggerIndex + 1, '');
-    cursor.currentLine = triggerIndex + 1;
-    cursor.currentCol = 0;
-    setState(() {}); */
-  }
-
-  void notifyNewlineDeletion() {
-/*     widget.document.sourceLines.removeAt(triggerIndex);
-    cursor.currentLine = triggerIndex - 1;
-    cursor.currentCol = 0;
-    setState(() {}); */
-  }
 
   @override
   State<StatefulWidget> createState() => CursorState();
 }
 
 class CursorState extends State<Cursor> {
+  int lineNo = 0;
+  int colNo = 0;
   late final Timer timer;
   Color color = Colors.green;
 
@@ -58,5 +41,25 @@ class CursorState extends State<Cursor> {
         color: color,
       ),
     );
+  }
+}
+
+class CursorLocation {
+  final int row;
+  final int col;
+
+  const CursorLocation({
+    required this.row,
+    required this.col,
+  });
+
+  operator +(CursorLocation other) =>
+      CursorLocation(row: row + other.row, col: col + other.col);
+
+  @override
+  operator ==(Object other) {
+    if (other is! CursorLocation) return false;
+    if (other.row == row && other.col == col) return true;
+    return false;
   }
 }

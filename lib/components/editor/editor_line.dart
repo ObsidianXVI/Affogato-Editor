@@ -2,13 +2,13 @@ part of affogato.components;
 
 class EditorLineComponent extends StatefulWidget {
   final int lineNo;
-  final String initialContent;
   final EditorState editor;
+  final List<CharCellComponent> charCells;
 
   const EditorLineComponent({
-    required this.initialContent,
     required this.editor,
     required this.lineNo,
+    required this.charCells,
     super.key,
   });
 
@@ -17,30 +17,13 @@ class EditorLineComponent extends StatefulWidget {
 }
 
 class EditorLineState extends State<EditorLineComponent> {
-  String? content;
-
-  @override
-  void initState() {
-    content = widget.initialContent;
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final List<CharCellComponent> charCells = [
-      for (String char in content!.split(''))
-        CharCellComponent(
-          value: char,
-          editorLineState: this,
-          cellStyle: CellStyle(),
-          key: GlobalKey(),
-        ),
-    ];
     return GestureDetector(
       onTap: () {
-        ((charCells.last.key as GlobalKey).currentState
+/*         ((charCells.last.key as GlobalKey).currentState
                 as CharCellComponentState)
-            .spawnCursor();
+            .spawnCursor(); */
       },
       child: Container(
         width: double.infinity,
@@ -49,7 +32,7 @@ class EditorLineState extends State<EditorLineComponent> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: charCells,
+          children: widget.charCells,
         ),
       ),
     );

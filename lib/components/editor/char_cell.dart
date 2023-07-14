@@ -2,13 +2,13 @@ part of affogato.components;
 
 class CharCellComponent extends StatefulWidget {
   final String value;
-  final EditorLineState editorLineState;
+  final EditorState editor;
   final Cursor? initialCursor;
   final CellStyle cellStyle;
 
   const CharCellComponent({
     required this.value,
-    required this.editorLineState,
+    required this.editor,
     required this.cellStyle,
     this.initialCursor,
     super.key,
@@ -28,7 +28,7 @@ class CharCellComponentState extends State<CharCellComponent> {
       () {
         if (cursor != null) {
           cursor = null;
-          widget.editorLineState.setState(() {});
+          widget.editor.setState(() {});
         }
       },
     );
@@ -38,9 +38,9 @@ class CharCellComponentState extends State<CharCellComponent> {
   void spawnCursor() {
     if (cursor != null) return;
     Events.cursor.spawnCursorReplacement();
-    cursor = Cursor(
+/*     cursor = Cursor(
       charCellComponent: widget,
-    );
+    ); */
     setState(() {});
   }
 
