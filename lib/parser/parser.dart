@@ -1,6 +1,7 @@
 library affogato.parser;
 
 import 'package:affogato/components/components.dart';
+import 'package:affogato/engine/engine.dart';
 
 class AffogatoLanguageBundle {
   final AffogatoTokeniser tokeniser;
@@ -15,7 +16,7 @@ class AffogatoLanguageBundle {
 }
 
 abstract class AffogatoTokeniser {
-  List<AffogatoToken> tokenise(List<String> chars);
+  List<AffogatoToken> tokenise(DocumentMap doc);
 }
 
 abstract class AffogatoParser {
@@ -24,19 +25,25 @@ abstract class AffogatoParser {
 
 class AffogatoToken {
   final String lexeme;
-  final Cursor pos;
+  final CursorLocation start;
 
   const AffogatoToken({
     required this.lexeme,
-    required this.pos,
+    required this.start,
   });
+
+  int get charCount => lexeme.length;
 }
 
 class AffogatoParseObject {
   final AffogatoScope scope;
+  final List<AffogatoToken> tokens;
+  final CellStyle cellStyle;
 
   const AffogatoParseObject({
     required this.scope,
+    required this.tokens,
+    required this.cellStyle,
   });
 }
 

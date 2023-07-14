@@ -3,6 +3,7 @@ library affogato.engine;
 import 'package:affogato/components/components.dart';
 import 'package:affogato/parser/parser.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/rendering.dart';
 
 part './affogato_document.dart';
 
