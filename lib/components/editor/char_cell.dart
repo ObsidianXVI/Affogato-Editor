@@ -5,15 +5,15 @@ class CharCellComponent extends StatefulWidget {
   final EditorState editor;
   final CellStyle cellStyle;
   final CursorLocation location;
-  final GlobalKey<CharCellComponentState> globalKey = GlobalKey();
 
-  CharCellComponent({
+  const CharCellComponent({
     required this.value,
     required this.editor,
     required this.cellStyle,
     required this.location,
     super.key,
   });
+
   @override
   State<StatefulWidget> createState() => CharCellComponentState();
 }

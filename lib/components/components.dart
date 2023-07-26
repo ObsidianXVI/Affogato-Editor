@@ -17,5 +17,6 @@ abstract class AffogatoComponent extends StatefulWidget {
 
   const AffogatoComponent({
     required this.theme,
+    super.key,
   });
 }

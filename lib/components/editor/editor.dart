@@ -6,11 +6,12 @@ class AffogatoEditor extends AffogatoComponent {
   final double width;
   final double height;
 
-  AffogatoEditor({
+  const AffogatoEditor({
     required super.theme,
     required this.width,
     required this.height,
     required this.document,
+    super.key,
   });
 
   @override
@@ -40,7 +41,6 @@ class EditorState extends State<AffogatoEditor> {
               ),
               editor: this,
               cellStyle: CellStyle(),
-              key: GlobalKey(),
             );
           },
         ),
