@@ -39,16 +39,13 @@ class CursorState extends State<Cursor> {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.center,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 400),
-        height: 18,
-        width: 2,
-        curve: Curves.easeIn,
-        decoration: BoxDecoration(
-          color: color,
-        ),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 400),
+      height: 18,
+      width: 2,
+      curve: Curves.easeIn,
+      decoration: BoxDecoration(
+        color: color,
       ),
     );
   }
