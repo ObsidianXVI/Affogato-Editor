@@ -26,25 +26,29 @@ class CharCellComponentState extends State<CharCellComponent> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) {
-        widget.editor.cursor.moveToCell(this);
-      },
-      child: Stack(
-        children: [
-          Text(
-            widget.value,
-            style: const TextStyle(
-              fontSize: 18,
-              height: 1.4,
-              fontFamily: 'DMMono',
-              color: Colors.pink,
+    return ValueListenableBuilder(
+        valueListenable: widget.editor.cursor.cursorLocationNotifier,
+        builder: (BuildContext context, CursorLocation cursorLoc, _) {
+          return GestureDetector(
+            onTapDown: (_) {
+              widget.editor.cursor.cursorLocationNotifier.value =
+                  widget.location;
+            },
+            child: Stack(
+              children: [
+                Text(
+                  widget.value,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    height: 1.4,
+                    fontFamily: 'DMMono',
+                    color: Colors.pink,
+                  ),
+                ),
+                if (cursorLoc == widget.location) widget.editor.cursor,
+              ],
             ),
-          ),
-          if (widget.editor.cursor.cursorLocation == widget.location)
-            widget.editor.cursor,
-        ],
-      ),
-    );
+          );
+        });
   }
 }

@@ -1,22 +1,20 @@
 part of affogato.components;
 
 class Cursor extends StatefulWidget {
-  CharCellComponentState? currentCell;
+  final AffogatoDocument document;
+  final ValueNotifier<CursorLocation> cursorLocationNotifier;
 
   Cursor({
+    required this.document,
+    required CursorLocation initialLoc,
     super.key,
-  });
+  }) : cursorLocationNotifier = ValueNotifier(initialLoc);
 
   @override
   State<StatefulWidget> createState() => CursorState();
 
-  CursorLocation? get cursorLocation => currentCell?.widget.location;
-
-  void moveToCell(CharCellComponentState newCell) {
-    final CharCellComponentState? oldCell = currentCell;
-    currentCell = newCell;
-    oldCell?.setState(() {});
-    newCell.setState(() {});
+  void moveToLocation(CursorLocation location) {
+    cursorLocationNotifier.value = location;
   }
 }
 

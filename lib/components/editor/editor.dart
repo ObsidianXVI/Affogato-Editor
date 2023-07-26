@@ -20,7 +20,10 @@ class AffogatoEditor extends AffogatoComponent {
 class EditorState extends State<AffogatoEditor> {
   final List<Widget> lineMarkers = [];
   final List<Widget> editorLines = [];
-  final Cursor cursor = Cursor();
+  late final Cursor cursor = Cursor(
+    document: widget.document,
+    initialLoc: const CursorLocation(row: 0, col: 0),
+  );
   @override
   void initState() {
     lineMarkers

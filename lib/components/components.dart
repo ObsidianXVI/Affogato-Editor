@@ -2,7 +2,6 @@ library affogato.components;
 
 import 'package:affogato/style/style.dart';
 import 'package:affogato/engine/engine.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 part './editor/editor.dart';

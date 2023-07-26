@@ -21,9 +21,7 @@ class EditorLineState extends State<EditorLineComponent> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-/*         ((charCells.last.key as GlobalKey).currentState
-                as CharCellComponentState)
-            .spawnCursor(); */
+        widget.editor.cursor.moveToLocation(widget.charCells.last.location);
       },
       child: Container(
         width: double.infinity,
