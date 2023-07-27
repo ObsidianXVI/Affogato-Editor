@@ -30,8 +30,9 @@ class CharCellComponentState extends State<CharCellComponent> {
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
         valueListenable: widget.editor.cursor.cursorLocationNotifier,
-        builder: (BuildContext context, CursorLocation cursorLoc, _) {
-          final bool willRenderCursor = cursorLoc == widget.location;
+        builder: (BuildContext context, CursorConfigs cursorConfigs, _) {
+          final bool willRenderCursor =
+              cursorConfigs.location == widget.location;
           return GestureDetector(
             onTapDown: (TapDownDetails details) {
               setState(() {
@@ -39,7 +40,10 @@ class CharCellComponentState extends State<CharCellComponent> {
                     (context.findRenderObject() as RenderBox).size.width / 2;
                 cursorPosLeft = details.localPosition.dx < halfWidth;
                 widget.editor.cursor.cursorLocationNotifier.value =
-                    widget.location;
+                    CursorConfigs(
+                  location: widget.location,
+                  forceCursorRight: false,
+                );
               });
             },
             child: Stack(
@@ -55,7 +59,9 @@ class CharCellComponentState extends State<CharCellComponent> {
                 ),
                 if (willRenderCursor)
                   Positioned(
-                    left: cursorPosLeft ? 0 : 8,
+                    left: !cursorConfigs.forceCursorRight && cursorPosLeft
+                        ? 0
+                        : 8,
                     bottom: 3,
                     child: Align(
                       alignment: Alignment.center,

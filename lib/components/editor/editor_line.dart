@@ -21,7 +21,10 @@ class EditorLineState extends State<EditorLineComponent> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        widget.editor.cursor.moveToLocation(widget.charCells.last.location);
+        widget.editor.cursor.moveToLocation(
+          widget.charCells.last.location,
+          forceCursorRight: true,
+        );
       },
       child: Container(
         width: double.infinity,

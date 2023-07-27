@@ -2,20 +2,39 @@ part of affogato.components;
 
 class Cursor extends StatefulWidget {
   final AffogatoDocument document;
-  final ValueNotifier<CursorLocation> cursorLocationNotifier;
+  final ValueNotifier<CursorConfigs> cursorLocationNotifier;
 
   Cursor({
     required this.document,
     required CursorLocation initialLoc,
     super.key,
-  }) : cursorLocationNotifier = ValueNotifier(initialLoc);
+  }) : cursorLocationNotifier = ValueNotifier(
+          CursorConfigs(
+            location: initialLoc,
+            forceCursorRight: false,
+          ),
+        );
 
   @override
   State<StatefulWidget> createState() => CursorState();
 
-  void moveToLocation(CursorLocation location) {
-    cursorLocationNotifier.value = location;
+  void moveToLocation(CursorLocation location,
+      {bool forceCursorRight = false}) {
+    cursorLocationNotifier.value = CursorConfigs(
+      location: location,
+      forceCursorRight: forceCursorRight,
+    );
   }
+}
+
+class CursorConfigs {
+  final CursorLocation location;
+  final bool forceCursorRight;
+
+  const CursorConfigs({
+    required this.location,
+    required this.forceCursorRight,
+  });
 }
 
 class CursorState extends State<Cursor> {
