@@ -25,6 +25,7 @@ class EditorState extends State<AffogatoEditor> {
     document: widget.document,
     initialLoc: const CursorLocation(row: 0, col: 0),
   );
+
   @override
   void initState() {
     lineMarkers
@@ -62,8 +63,25 @@ class EditorState extends State<AffogatoEditor> {
       child: Align(
         alignment: Alignment.centerLeft,
         child: KeyboardListener(
+          autofocus: true,
           focusNode: FocusNode(),
-          onKeyEvent: (KeyEvent keyEvent) => null,
+          onKeyEvent: (KeyEvent keyEvent) {
+            if (keyEvent is KeyUpEvent) {
+              if (keyEvent.logicalKey == LogicalKeyboardKey.backspace) {
+                print(widget.document.documentMap.charAt(cursor.currentLoc));
+              }
+            } else if (keyEvent is KeyDownEvent) {
+              if (keyEvent.logicalKey == LogicalKeyboardKey.arrowLeft) {
+                cursor.cursorLocationNotifier.value =
+                    cursor.currentLoc + const CursorLocation(row: 0, col: -1);
+              } else if (keyEvent.logicalKey == LogicalKeyboardKey.arrowRight) {
+                if (keyEvent.logicalKey == LogicalKeyboardKey.arrowRight) {
+                  cursor.cursorLocationNotifier.value =
+                      cursor.currentLoc + const CursorLocation(row: 0, col: 1);
+                }
+              }
+            }
+          },
           child: SingleChildScrollView(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,

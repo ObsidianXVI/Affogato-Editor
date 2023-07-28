@@ -30,9 +30,8 @@ class CharCellComponentState extends State<CharCellComponent> {
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
         valueListenable: widget.editor.cursor.cursorLocationNotifier,
-        builder: (BuildContext context, CursorConfigs cursorConfigs, _) {
-          final bool willRenderCursor =
-              cursorConfigs.location == widget.location;
+        builder: (BuildContext context, CursorLocation cursorLocation, _) {
+          final bool willRenderCursor = cursorLocation == widget.location;
           return GestureDetector(
             onTapDown: (TapDownDetails details) {
               setState(() {
@@ -40,13 +39,14 @@ class CharCellComponentState extends State<CharCellComponent> {
                     (context.findRenderObject() as RenderBox).size.width / 2;
                 cursorPosLeft = details.localPosition.dx < halfWidth;
                 widget.editor.cursor.cursorLocationNotifier.value =
-                    CursorConfigs(
-                  location: widget.location,
-                  forceCursorRight: false,
-                );
+                    cursorPosLeft
+                        ? widget.location +
+                            const CursorLocation(row: 0, col: -1)
+                        : widget.location;
               });
             },
             child: Stack(
+              alignment: AlignmentDirectional.centerEnd,
               children: [
                 Text(
                   widget.value,
@@ -57,17 +57,7 @@ class CharCellComponentState extends State<CharCellComponent> {
                     color: Colors.pink,
                   ),
                 ),
-                if (willRenderCursor)
-                  Positioned(
-                    left: !cursorConfigs.forceCursorRight && cursorPosLeft
-                        ? 0
-                        : 8,
-                    bottom: 3,
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: widget.editor.cursor,
-                    ),
-                  ),
+                if (willRenderCursor) widget.editor.cursor,
               ],
             ),
           );

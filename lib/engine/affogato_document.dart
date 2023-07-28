@@ -42,55 +42,23 @@ class DocumentMap {
     return [for (List<String> r in rowsLeft) ...r];
   }
 
-  String consumeChar([int count = 1]) {
-    final List<String> consumedChars = [];
-    currentLocation += advanceCursor(
-      count,
-      (List<String> newChars) => consumedChars.addAll(newChars),
-    );
-    return consumedChars.first;
-  }
-
-  List<String> consumeUntil(String stopChar) {
-    final List<String> consumedChars = [];
-    while (peekChar() != stopChar) {
-      consumedChars.add(consumeChar());
-    }
-    return consumedChars;
-  }
-
-  String peekChar([int lookAhead = 1]) {
-    final List<String> consumedChars = [];
-    advanceCursor(
-      lookAhead,
-      (List<String> newChars) => consumedChars.addAll(newChars),
-    );
-    return consumedChars.last;
-  }
-
-  CursorLocation advanceCursor(
-    int count, [
+  CursorLocation moveCursor(
+    int positions, [
     void Function(List<String>)? addChars,
   ]) {
-    List<String> currentRow = chars[currentLocation.row];
-    final int rowLength = currentRow.length;
-    if (count < rowLength) {
-      addChars?.call(currentRow.sublist(0, count));
-      return currentLocation + CursorLocation(row: 0, col: count);
+    CursorLocation finalLoc = currentLocation;
+    final int newPos = currentLocation.col + positions;
+    final List<String> currentRow = chars[currentLocation.row];
+    if (newPos > currentRow.length) {
+      finalLoc += const CursorLocation(row: 1, col: 0);
+      final int remPos = newPos - currentRow.length;
+      return moveCursor(remPos, addChars);
+    } else if (newPos < currentRow.length) {
+      finalLoc += const CursorLocation(row: -1, col: 0);
+      final int remPos = newPos + currentRow.length;
+      return moveCursor(remPos, addChars);
     } else {
-      CursorLocation newLoc = currentLocation;
-      while (true) {
-        newLoc = CursorLocation(row: newLoc.row + 1, col: 0);
-        addChars?.call(currentRow);
-        currentRow.clear();
-        currentRow = chars[newLoc.row];
-        if (count < currentRow.length) {
-          addChars?.call(currentRow.sublist(0, count));
-          return newLoc + CursorLocation(row: 0, col: count);
-        } else {
-          count -= currentRow.length;
-        }
-      }
+      return finalLoc + CursorLocation(row: 0, col: positions);
     }
   }
 }

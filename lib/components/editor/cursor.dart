@@ -2,39 +2,23 @@ part of affogato.components;
 
 class Cursor extends StatefulWidget {
   final AffogatoDocument document;
-  final ValueNotifier<CursorConfigs> cursorLocationNotifier;
+  final ValueNotifier<CursorLocation> cursorLocationNotifier;
 
   Cursor({
     required this.document,
     required CursorLocation initialLoc,
     super.key,
-  }) : cursorLocationNotifier = ValueNotifier(
-          CursorConfigs(
-            location: initialLoc,
-            forceCursorRight: false,
-          ),
-        );
+  }) : cursorLocationNotifier = ValueNotifier(initialLoc);
 
   @override
   State<StatefulWidget> createState() => CursorState();
 
+  CursorLocation get currentLoc => cursorLocationNotifier.value;
+
   void moveToLocation(CursorLocation location,
       {bool forceCursorRight = false}) {
-    cursorLocationNotifier.value = CursorConfigs(
-      location: location,
-      forceCursorRight: forceCursorRight,
-    );
+    cursorLocationNotifier.value = location;
   }
-}
-
-class CursorConfigs {
-  final CursorLocation location;
-  final bool forceCursorRight;
-
-  const CursorConfigs({
-    required this.location,
-    required this.forceCursorRight,
-  });
 }
 
 class CursorState extends State<Cursor> {
@@ -79,6 +63,8 @@ class CursorLocation {
     required this.col,
   });
 
+  /// This action should not be performed directly, but instead called by an
+  /// implementation that is [DocumentMap]-aware.
   operator +(CursorLocation other) =>
       CursorLocation(row: row + other.row, col: col + other.col);
 
