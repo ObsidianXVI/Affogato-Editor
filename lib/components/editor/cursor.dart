@@ -63,6 +63,38 @@ class CursorLocation {
     required this.col,
   });
 
+  CursorLocation moveBy(CursorLocation steps, DocumentMap documentMap) {
+    final int finalRowNum =
+        getRowLocInMap(documentMap.chars.length, row + steps.row);
+    final int rowLength = documentMap.chars[finalRowNum].length;
+    final int finalColNum = getColLocInRow(rowLength, col + steps.col);
+    return CursorLocation(row: finalRowNum, col: finalColNum);
+  }
+
+  int getRowLocInMap(int mapLength, int expectedRowIndex) {
+    if (expectedRowIndex < mapLength) {
+      if (0 <= expectedRowIndex) {
+        return expectedRowIndex;
+      } else {
+        return 0;
+      }
+    } else {
+      return mapLength - 1;
+    }
+  }
+
+  int getColLocInRow(int rowLength, int expectedColIndex) {
+    if (expectedColIndex < rowLength) {
+      if (0 <= expectedColIndex) {
+        return expectedColIndex;
+      } else {
+        return 0;
+      }
+    } else {
+      return rowLength - 1;
+    }
+  }
+
   /// This action should not be performed directly, but instead called by an
   /// implementation that is [DocumentMap]-aware.
   operator +(CursorLocation other) =>
@@ -74,4 +106,7 @@ class CursorLocation {
     if (other.row == row && other.col == col) return true;
     return false;
   }
+
+  @override
+  String toString() => "CL<$row, $col>";
 }

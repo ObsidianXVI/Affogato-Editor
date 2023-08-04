@@ -67,18 +67,30 @@ class EditorState extends State<AffogatoEditor> {
           focusNode: FocusNode(),
           onKeyEvent: (KeyEvent keyEvent) {
             if (keyEvent is KeyUpEvent) {
-              if (keyEvent.logicalKey == LogicalKeyboardKey.backspace) {
-                print(widget.document.documentMap.charAt(cursor.currentLoc));
-              }
+              if (keyEvent.logicalKey == LogicalKeyboardKey.backspace) {}
             } else if (keyEvent is KeyDownEvent) {
               if (keyEvent.logicalKey == LogicalKeyboardKey.arrowLeft) {
-                cursor.cursorLocationNotifier.value =
-                    cursor.currentLoc + const CursorLocation(row: 0, col: -1);
+                cursor.cursorLocationNotifier.value = cursor.currentLoc.moveBy(
+                  const CursorLocation(row: 0, col: -1),
+                  widget.document.documentMap,
+                );
               } else if (keyEvent.logicalKey == LogicalKeyboardKey.arrowRight) {
-                if (keyEvent.logicalKey == LogicalKeyboardKey.arrowRight) {
-                  cursor.cursorLocationNotifier.value =
-                      cursor.currentLoc + const CursorLocation(row: 0, col: 1);
-                }
+                cursor.cursorLocationNotifier.value = cursor.currentLoc.moveBy(
+                  const CursorLocation(row: 0, col: 1),
+                  widget.document.documentMap,
+                );
+              } else if (keyEvent.logicalKey == LogicalKeyboardKey.arrowUp) {
+                cursor.cursorLocationNotifier.value = cursor
+                    .cursorLocationNotifier.value = cursor.currentLoc.moveBy(
+                  const CursorLocation(row: -1, col: 0),
+                  widget.document.documentMap,
+                );
+              } else if (keyEvent.logicalKey == LogicalKeyboardKey.arrowDown) {
+                cursor.cursorLocationNotifier.value = cursor
+                    .cursorLocationNotifier.value = cursor.currentLoc.moveBy(
+                  const CursorLocation(row: 1, col: 0),
+                  widget.document.documentMap,
+                );
               }
             }
           },

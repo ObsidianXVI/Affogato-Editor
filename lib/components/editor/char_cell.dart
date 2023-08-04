@@ -40,8 +40,10 @@ class CharCellComponentState extends State<CharCellComponent> {
                 cursorPosLeft = details.localPosition.dx < halfWidth;
                 widget.editor.cursor.cursorLocationNotifier.value =
                     cursorPosLeft
-                        ? widget.location +
-                            const CursorLocation(row: 0, col: -1)
+                        ? widget.location.moveBy(
+                            const CursorLocation(row: 0, col: -1),
+                            widget.editor.widget.document.documentMap,
+                          )
                         : widget.location;
               });
             },

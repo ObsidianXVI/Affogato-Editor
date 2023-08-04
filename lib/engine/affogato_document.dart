@@ -12,7 +12,7 @@ class AffogatoDocument {
 }
 
 class DocumentMap {
-  CursorLocation currentLocation = CursorLocation(row: 0, col: 0);
+  CursorLocation currentLocation = const CursorLocation(row: 0, col: 0);
   late final List<List<String>> chars =
       source.split('\n').map((String line) => line.split('')).toList();
   late final int totalLines = chars.length;

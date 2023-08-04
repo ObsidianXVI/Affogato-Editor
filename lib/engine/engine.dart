@@ -1,7 +1,5 @@
 library affogato.engine;
 
-import 'dart:js_util';
-
 import 'package:affogato/components/components.dart';
 import 'package:affogato/parser/parser.dart';
 import 'package:flutter/cupertino.dart';
