@@ -64,11 +64,59 @@ class CursorLocation {
   });
 
   CursorLocation moveBy(CursorLocation steps, DocumentMap documentMap) {
-    final int finalRowNum =
-        getRowLocInMap(documentMap.chars.length, row + steps.row);
+    // move to the desired, restricted row
+    int finalRowNum = getRowLocInMap(documentMap.chars.length, row + steps.row);
+    // get the row's length
     final int rowLength = documentMap.chars[finalRowNum].length;
-    final int finalColNum = getColLocInRow(rowLength, col + steps.col);
-    return CursorLocation(row: finalRowNum, col: finalColNum);
+    // move to the desired, restricted col
+    RowColPair rowColPair = getColLocInRow(rowLength, col + steps.col);
+    // if the col num is within bounds of the new row, great!
+    if (rowColPair.isResolved) {
+      return CursorLocation(row: finalRowNum, col: rowColPair.col);
+    } else {
+      // store the adjusted row num
+      int resolvedRowNum = finalRowNum; // + rowColPair.row;
+      // attempt to resolve in the adjusted row
+      RowColPair resolvedPair = getColLocInRow(resolvedRowNum, rowColPair.col);
+      // keep adjusting until resolved
+      int resolvedRowLength = documentMap.chars[resolvedRowNum].length;
+      while (!resolvedPair.isResolved) {
+        resolvedRowNum += resolvedPair.row;
+        resolvedPair = getColLocInRow(
+          resolvedRowLength,
+          resolvedPair.col,
+        );
+      }
+      return CursorLocation(
+          row: resolvedRowNum, col: resolvedRowLength + resolvedPair.col - 1);
+    }
+  }
+
+  CursorLocation moveUp(int rows, DocumentMap docMap) {
+    final int rowNum = row - rows < 0 ? 0 : row - rows;
+    final int rowLen = docMap.chars[rowNum].length;
+    final int colNum = col >= rowLen ? rowLen - 1 : col;
+    return CursorLocation(row: rowNum, col: colNum);
+  }
+
+  CursorLocation moveDown(int rows, DocumentMap docMap) {
+    final int docLen = docMap.chars.length;
+    final int rowNum = row + rows > docLen ? docLen - 1 : row + rows;
+    final int rowLen = docMap.chars[rowNum].length;
+    final int colNum = col >= rowLen ? rowLen - 1 : col;
+    return CursorLocation(row: rowNum, col: colNum);
+  }
+
+  CursorLocation moveLeftBy1(DocumentMap docMap) {
+    return col - 1 >= 0
+        ? CursorLocation(row: row, col: col - 1)
+        : CursorLocation(row: row - 1, col: docMap.chars[row - 1].length - 1);
+  }
+
+  CursorLocation moveRightBy1(DocumentMap docMap) {
+    return col + 1 < docMap.chars[row].length
+        ? CursorLocation(row: row, col: col + 1)
+        : CursorLocation(row: row + 1, col: 0);
   }
 
   int getRowLocInMap(int mapLength, int expectedRowIndex) {
@@ -83,15 +131,18 @@ class CursorLocation {
     }
   }
 
-  int getColLocInRow(int rowLength, int expectedColIndex) {
+  RowColPair getColLocInRow(int rowLength, int expectedColIndex) {
     if (expectedColIndex < rowLength) {
       if (0 <= expectedColIndex) {
-        return expectedColIndex;
+        // is within bounds
+        return RowColPair(0, expectedColIndex, isResolved: true);
       } else {
-        return 0;
+        // is in rows above
+        return RowColPair(-1, expectedColIndex + 1, isResolved: false);
       }
     } else {
-      return rowLength - 1;
+      // is in rows below
+      return RowColPair(1, expectedColIndex - 1, isResolved: false);
     }
   }
 
@@ -109,4 +160,22 @@ class CursorLocation {
 
   @override
   String toString() => "CL<$row, $col>";
+}
+
+class Pair<A, B> {
+  final A item1;
+  final B item2;
+
+  const Pair(this.item1, this.item2);
+}
+
+class RowColPair extends Pair<int, int> {
+  final bool isResolved;
+  final int row;
+  final int col;
+  const RowColPair(
+    this.row,
+    this.col, {
+    required this.isResolved,
+  }) : super(row, col);
 }
