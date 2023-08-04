@@ -68,7 +68,7 @@ class EditorState extends State<AffogatoEditor> {
           onKeyEvent: (KeyEvent keyEvent) {
             if (keyEvent is KeyUpEvent) {
               if (keyEvent.logicalKey == LogicalKeyboardKey.backspace) {}
-            } else if (keyEvent is KeyDownEvent) {
+            } else if (keyEvent is KeyDownEvent || keyEvent is KeyRepeatEvent) {
               if (keyEvent.logicalKey == LogicalKeyboardKey.arrowLeft) {
                 cursor.cursorLocationNotifier.value = cursor.currentLoc.moveBy(
                   const CursorLocation(row: 0, col: -1),
