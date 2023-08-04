@@ -15,8 +15,7 @@ class Cursor extends StatefulWidget {
 
   CursorLocation get currentLoc => cursorLocationNotifier.value;
 
-  void moveToLocation(CursorLocation location,
-      {bool forceCursorRight = false}) {
+  void moveToLocation(CursorLocation location) {
     cursorLocationNotifier.value = location;
   }
 }
@@ -28,8 +27,9 @@ class CursorState extends State<Cursor> {
   @override
   void initState() {
     timer = Timer.periodic(const Duration(milliseconds: 500), (_) {
-      color = color == Colors.green ? Colors.transparent : Colors.green;
-      setState(() {});
+      setState(() {
+        color = color == Colors.green ? Colors.transparent : Colors.green;
+      });
     });
     super.initState();
   }
@@ -63,35 +63,6 @@ class CursorLocation {
     required this.col,
   });
 
-  CursorLocation moveBy(CursorLocation steps, DocumentMap documentMap) {
-    // move to the desired, restricted row
-    int finalRowNum = getRowLocInMap(documentMap.chars.length, row + steps.row);
-    // get the row's length
-    final int rowLength = documentMap.chars[finalRowNum].length;
-    // move to the desired, restricted col
-    RowColPair rowColPair = getColLocInRow(rowLength, col + steps.col);
-    // if the col num is within bounds of the new row, great!
-    if (rowColPair.isResolved) {
-      return CursorLocation(row: finalRowNum, col: rowColPair.col);
-    } else {
-      // store the adjusted row num
-      int resolvedRowNum = finalRowNum; // + rowColPair.row;
-      // attempt to resolve in the adjusted row
-      RowColPair resolvedPair = getColLocInRow(resolvedRowNum, rowColPair.col);
-      // keep adjusting until resolved
-      int resolvedRowLength = documentMap.chars[resolvedRowNum].length;
-      while (!resolvedPair.isResolved) {
-        resolvedRowNum += resolvedPair.row;
-        resolvedPair = getColLocInRow(
-          resolvedRowLength,
-          resolvedPair.col,
-        );
-      }
-      return CursorLocation(
-          row: resolvedRowNum, col: resolvedRowLength + resolvedPair.col - 1);
-    }
-  }
-
   CursorLocation moveUp(int rows, DocumentMap docMap) {
     final int rowNum = row - rows < 0 ? 0 : row - rows;
     final int rowLen = docMap.chars[rowNum].length;
@@ -114,7 +85,7 @@ class CursorLocation {
   }
 
   CursorLocation moveRightBy1(DocumentMap docMap) {
-    return col + 1 < docMap.chars[row].length
+    return col + 1 <= docMap.chars[row].length
         ? CursorLocation(row: row, col: col + 1)
         : CursorLocation(row: row + 1, col: 0);
   }

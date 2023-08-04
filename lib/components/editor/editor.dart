@@ -75,7 +75,6 @@ class EditorState extends State<AffogatoEditor> {
               } else if (keyEvent.logicalKey == LogicalKeyboardKey.arrowRight) {
                 cursor.cursorLocationNotifier.value =
                     cursor.currentLoc.moveRightBy1(widget.document.documentMap);
-                print("New loc: ${cursor.currentLoc}");
               } else if (keyEvent.logicalKey == LogicalKeyboardKey.arrowUp) {
                 cursor.cursorLocationNotifier.value = cursor
                         .cursorLocationNotifier.value =

@@ -19,23 +19,34 @@ class EditorLineComponent extends StatefulWidget {
 class EditorLineState extends State<EditorLineComponent> {
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        widget.editor.cursor.moveToLocation(
-          widget.charCells.last.location,
-          forceCursorRight: true,
+    return ValueListenableBuilder(
+      valueListenable: widget.editor.cursor.cursorLocationNotifier,
+      builder: (BuildContext context, CursorLocation location, _) {
+        final bool willRenderCursor = location.row == widget.lineNo;
+        return GestureDetector(
+          onTap: () => widget.editor.cursor
+              .moveToLocation(widget.charCells.last.location),
+          child: Container(
+            width: double.infinity,
+            height: 28,
+            color: Colors.transparent, // need this to detect mouse taps outside
+            child: Stack(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: widget.charCells,
+                ),
+                if (willRenderCursor)
+                  Positioned(
+                    left: charCellWidth * location.col,
+                    child: widget.editor.cursor,
+                  ),
+              ],
+            ),
+          ),
         );
       },
-      child: Container(
-        width: double.infinity,
-        height: 28,
-        color: Colors.transparent, // need this to detect mouse taps outside
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: widget.charCells,
-        ),
-      ),
     );
   }
 }
