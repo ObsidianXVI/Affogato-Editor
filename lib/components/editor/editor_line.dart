@@ -39,6 +39,7 @@ class EditorLineState extends State<EditorLineComponent> {
                 ),
                 if (willRenderCursor)
                   Positioned(
+                    top: 3,
                     left: charCellWidth * location.col,
                     child: widget.editor.cursor,
                   ),

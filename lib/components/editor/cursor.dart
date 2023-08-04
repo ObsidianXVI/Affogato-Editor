@@ -21,12 +21,28 @@ class Cursor extends StatefulWidget {
 }
 
 class CursorState extends State<Cursor> {
-  late final Timer timer;
+  final Stream _stream =
+      Stream.periodic(const Duration(milliseconds: 500), (_) {});
+  late final StreamSubscription timerSub;
+  late final StreamSubscription<AffogatoEvent> eventStream;
   Color color = Colors.green;
 
   @override
   void initState() {
-    timer = Timer.periodic(const Duration(milliseconds: 500), (_) {
+    eventStream = AffogatoEvents.stream
+        .where((event) => event is AFCursorEvent)
+        .listen((event) {
+      if (event is AFCursorPauseBlinking) {
+        setState(() {
+          timerSub.pause();
+        });
+      } else if (event is AFCursorResumeBlinking) {
+        setState(() {
+          timerSub.resume();
+        });
+      }
+    });
+    timerSub = _stream.listen((_) {
       setState(() {
         color = color == Colors.green ? Colors.transparent : Colors.green;
       });
@@ -36,7 +52,8 @@ class CursorState extends State<Cursor> {
 
   @override
   void dispose() {
-    timer.cancel();
+    timerSub.cancel();
+    eventStream.cancel();
     super.dispose();
   }
 

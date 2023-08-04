@@ -67,8 +67,14 @@ class EditorState extends State<AffogatoEditor> {
           focusNode: FocusNode(),
           onKeyEvent: (KeyEvent keyEvent) {
             if (keyEvent is KeyUpEvent) {
+              AffogatoEvents.streamController
+                  .add(const AFCursorResumeBlinking());
               if (keyEvent.logicalKey == LogicalKeyboardKey.backspace) {}
             } else if (keyEvent is KeyDownEvent || keyEvent is KeyRepeatEvent) {
+              if (keyEvent is KeyRepeatEvent) {
+                AffogatoEvents.streamController
+                    .add(const AFCursorPauseBlinking());
+              }
               if (keyEvent.logicalKey == LogicalKeyboardKey.arrowLeft) {
                 cursor.cursorLocationNotifier.value =
                     cursor.currentLoc.moveLeftBy1(widget.document.documentMap);
