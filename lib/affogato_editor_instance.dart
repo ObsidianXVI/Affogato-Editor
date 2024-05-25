@@ -14,6 +14,7 @@ class AffogatoEditorInstance extends StatefulWidget {
 
 class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
   late final AffogatoEditorFieldController editorFieldController;
+  String oldText = '';
 
   @override
   void initState() {
@@ -74,7 +75,24 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
                         isDense: true,
                         contentPadding: EdgeInsets.all(0),
                       ),
-                      onChanged: (_) => setState(() {}),
+                      onChanged: (newText) => setState(() {
+                        final int cursorPos =
+                            editorFieldController.selection.start - 1;
+                        final Delta delta;
+                        if (newText.length > oldText.length) {
+                          delta = Delta.insertion(
+                              char: newText[cursorPos], pos: cursorPos);
+                        } else {
+                          delta = Delta.insertion(
+                              char: newText[cursorPos], pos: cursorPos);
+                        }
+                        for (final deltaInterceptor
+                            in widget.editorConfigs.deltaInterceptors) {
+                          deltaInterceptor.handleDelta(
+                              delta, editorFieldController);
+                        }
+                        oldText = newText;
+                      }),
                       controller: editorFieldController,
                       cursorColor: widget.editorConfigs.cursorColor,
                       maxLines:
@@ -97,11 +115,13 @@ class AffogatoEditorConfigs {
   final Color editorBackgroundColor;
   final TextStyle defaultTextStyle;
   final Color? cursorColor;
+  final List<DeltaInterceptor> deltaInterceptors;
 
   const AffogatoEditorConfigs({
     required this.editorWidth,
     required this.editorHeight,
     required this.defaultTextStyle,
+    this.deltaInterceptors = const [],
     this.editorBackgroundColor = Colors.transparent,
     this.cursorColor,
   });
