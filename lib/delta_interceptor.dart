@@ -48,3 +48,17 @@ class PairMatcher extends DeltaInterceptor {
     }
   }
 }
+
+class AutoIndentor extends DeltaInterceptor {
+  const AutoIndentor();
+
+  @override
+  void handleDelta(Delta delta, AffogatoEditorFieldController controller) {
+    if (delta.deltaType == DeltaType.insertion &&
+        delta.char == '\n' &&
+        controller.text[delta.pos - 1] == '{') {
+      controller.text = controller.text.insert(delta.pos + 1, '    \n');
+      controller.selection = TextSelection.collapsed(offset: delta.pos + 5);
+    }
+  }
+}

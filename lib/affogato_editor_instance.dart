@@ -76,16 +76,21 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
                         contentPadding: EdgeInsets.all(0),
                       ),
                       onChanged: (newText) => setState(() {
-                        final int cursorPos =
-                            editorFieldController.selection.start - 1;
                         final Delta delta;
-                        if (newText.length > oldText.length) {
-                          delta = Delta.insertion(
-                              char: newText[cursorPos], pos: cursorPos);
+                        if (newText.isNotEmpty) {
+                          final int cursorPos =
+                              editorFieldController.selection.start - 1;
+                          if (newText.length > oldText.length) {
+                            delta = Delta.insertion(
+                                char: newText[cursorPos], pos: cursorPos);
+                          } else {
+                            delta = Delta.deletion(
+                                char: newText[cursorPos], pos: cursorPos);
+                          }
                         } else {
-                          delta = Delta.insertion(
-                              char: newText[cursorPos], pos: cursorPos);
+                          return;
                         }
+
                         for (final deltaInterceptor
                             in widget.editorConfigs.deltaInterceptors) {
                           deltaInterceptor.handleDelta(
