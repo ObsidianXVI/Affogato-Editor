@@ -68,44 +68,58 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
                     left: 80,
                     width: widget.editorConfigs.editorWidth,
                     height: widget.editorConfigs.editorHeight,
-                    child: TextField(
-                      autofocus: true,
-                      autocorrect: false,
-                      decoration: const InputDecoration(
-                        isDense: true,
-                        contentPadding: EdgeInsets.all(0),
-                      ),
-                      onChanged: (newText) => setState(() {
-                        final Delta delta;
-                        if (newText.isNotEmpty) {
-                          final int cursorCurrentPos =
-                              editorFieldController.selection.start;
-                          if (newText.length > oldText.length) {
-                            delta = Delta.insertion(
-                                char: newText[cursorCurrentPos - 1],
-                                pos: cursorCurrentPos);
-                          } else if (newText.length < oldText.length) {
-                            delta = Delta.deletion(
-                                char: oldText[cursorCurrentPos],
-                                pos: cursorCurrentPos);
+                    child: KeyboardListener(
+                      focusNode: FocusNode(),
+                      onKeyEvent: (event) {
+                        if (event is KeyDownEvent) {
+                          if (event.logicalKey == LogicalKeyboardKey.tab) {
+                            editorFieldController.text =
+                                editorFieldController.text.insert(
+                                    editorFieldController.selection.start,
+                                    '    ');
+                            setState(() {});
+                          }
+                        }
+                      },
+                      child: TextField(
+                        autofocus: true,
+                        autocorrect: false,
+                        decoration: const InputDecoration(
+                          isDense: true,
+                          contentPadding: EdgeInsets.all(0),
+                        ),
+                        onChanged: (newText) => setState(() {
+                          final Delta delta;
+                          if (newText.isNotEmpty) {
+                            final int cursorCurrentPos =
+                                editorFieldController.selection.start;
+                            if (newText.length > oldText.length) {
+                              delta = Delta.insertion(
+                                  char: newText[cursorCurrentPos - 1],
+                                  pos: cursorCurrentPos);
+                            } else if (newText.length < oldText.length) {
+                              delta = Delta.deletion(
+                                  char: oldText[cursorCurrentPos],
+                                  pos: cursorCurrentPos);
+                            } else {
+                              return;
+                            }
                           } else {
                             return;
                           }
-                        } else {
-                          return;
-                        }
 
-                        for (final deltaInterceptor
-                            in widget.editorConfigs.deltaInterceptors) {
-                          deltaInterceptor.handleDelta(
-                              delta, editorFieldController);
-                        }
-                        oldText = editorFieldController.text;
-                      }),
-                      controller: editorFieldController,
-                      cursorColor: widget.editorConfigs.cursorColor,
-                      maxLines:
-                          1200, // an arbitrarily large number to make TextField occupy full height of parent
+                          for (final deltaInterceptor
+                              in widget.editorConfigs.deltaInterceptors) {
+                            deltaInterceptor.handleDelta(
+                                delta, editorFieldController);
+                          }
+                          oldText = editorFieldController.text;
+                        }),
+                        controller: editorFieldController,
+                        cursorColor: widget.editorConfigs.cursorColor,
+                        maxLines:
+                            1200, // an arbitrarily large number to make TextField occupy full height of parent
+                      ),
                     ),
                   ),
                 ],
