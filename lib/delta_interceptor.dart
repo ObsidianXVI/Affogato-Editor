@@ -31,19 +31,23 @@ class PairMatcher extends DeltaInterceptor {
 
   @override
   void handleDelta(Delta delta, AffogatoEditorFieldController controller) {
-    if (delta.deltaType == DeltaType.insertion) {
-      final String? matchingChar = switch (delta.char) {
-        '(' => ')',
-        '[' => ']',
-        '{' => '}',
-        '"' => '"',
-        "'" => "'",
-        '<' => '>',
-        String() => null,
-      };
-      if (matchingChar != null) {
-        controller.text = controller.text.insert(delta.pos + 1, matchingChar);
-        controller.selection = TextSelection.collapsed(offset: delta.pos + 1);
+    final String? matchingChar = switch (delta.char) {
+      '(' => ')',
+      '[' => ']',
+      '{' => '}',
+      '"' => '"',
+      "'" => "'",
+      '<' => '>',
+      String() => null,
+    };
+    if (matchingChar != null) {
+      if (delta.deltaType == DeltaType.insertion) {
+        controller.text = controller.text.insert(delta.pos, matchingChar);
+        controller.selection = TextSelection.collapsed(offset: delta.pos);
+      } else if (delta.deltaType == DeltaType.deletion &&
+          controller.text[delta.pos] == matchingChar) {
+        controller.text = controller.text.delete(delta.pos);
+        controller.selection = TextSelection.collapsed(offset: delta.pos);
       }
     }
   }
@@ -56,9 +60,9 @@ class AutoIndentor extends DeltaInterceptor {
   void handleDelta(Delta delta, AffogatoEditorFieldController controller) {
     if (delta.deltaType == DeltaType.insertion &&
         delta.char == '\n' &&
-        controller.text[delta.pos - 1] == '{') {
-      controller.text = controller.text.insert(delta.pos + 1, '    \n');
-      controller.selection = TextSelection.collapsed(offset: delta.pos + 5);
+        controller.text[delta.pos - 2] == '{') {
+      controller.text = controller.text.insert(delta.pos, '    \n');
+      controller.selection = TextSelection.collapsed(offset: delta.pos + 4);
     }
   }
 }

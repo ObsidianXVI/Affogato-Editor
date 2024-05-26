@@ -1,5 +1,7 @@
 library affogato.editor;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 part './affogato_editor_instance.dart';

@@ -78,14 +78,18 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
                       onChanged: (newText) => setState(() {
                         final Delta delta;
                         if (newText.isNotEmpty) {
-                          final int cursorPos =
-                              editorFieldController.selection.start - 1;
+                          final int cursorCurrentPos =
+                              editorFieldController.selection.start;
                           if (newText.length > oldText.length) {
                             delta = Delta.insertion(
-                                char: newText[cursorPos], pos: cursorPos);
-                          } else {
+                                char: newText[cursorCurrentPos - 1],
+                                pos: cursorCurrentPos);
+                          } else if (newText.length < oldText.length) {
                             delta = Delta.deletion(
-                                char: newText[cursorPos], pos: cursorPos);
+                                char: oldText[cursorCurrentPos],
+                                pos: cursorCurrentPos);
+                          } else {
+                            return;
                           }
                         } else {
                           return;
@@ -96,7 +100,7 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
                           deltaInterceptor.handleDelta(
                               delta, editorFieldController);
                         }
-                        oldText = newText;
+                        oldText = editorFieldController.text;
                       }),
                       controller: editorFieldController,
                       cursorColor: widget.editorConfigs.cursorColor,
