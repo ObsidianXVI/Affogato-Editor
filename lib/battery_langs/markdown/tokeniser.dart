@@ -1,12 +1,5 @@
 part of affogato.editor.battery.markdown;
 
-class MDTokenType extends TokenType {
-  MDTokenType(super.name);
-
-  MDTokenType.header1() : super('Header 1');
-  MDTokenType.body() : super('Body Text');
-}
-
 class MarkdownTokeniser extends Tokeniser {
   final List<Token> tokens = [];
   late Cursor cursor;
@@ -30,68 +23,39 @@ class MarkdownTokeniser extends Tokeniser {
   }
 
   void tokenisingLoop() {
-    while ([' ', '\n'].contains(cursor.current)) {
-      cursor.skip();
-    }
-
     while (!cursor.reachedEOF) {
-      if (cursor.current == '#' && cursor.peek().first == ' ') {
-        tokens.add(tokeniseHeader());
-      } else if (cursor.current == '\n') {
-        cursor.skip();
-      } else {
-        tokens.add(tokeniseBody());
-      }
+      tokens.add(
+        switch (cursor.current) {
+          '#' => Token(
+              tokenType: TokenType.numberSign(),
+              lexeme: TokenType.numberSign().value,
+              start: cursor.location() + offset,
+              end: (cursor..advance()).location() + offset),
+          ' ' => Token(
+              tokenType: TokenType.space(),
+              lexeme: TokenType.space().value,
+              start: cursor.location() + offset,
+              end: (cursor..advance()).location() + offset),
+          '\n' => Token(
+              tokenType: TokenType.newline(),
+              lexeme: TokenType.newline().value,
+              start: cursor.location() + offset,
+              end: (cursor..advance()).location() + offset),
+          String() => Token(
+              tokenType: TokenType.string(),
+              lexeme: cursor.current,
+              start: cursor.location() + offset,
+              end: (cursor..advance()).location() + offset),
+        },
+      );
     }
-  }
-
-  Token tokeniseHeader() {
-    final CursorLocation start = cursor.location() + offset;
-    final CursorLocation end;
-    final List<Char> lexemeChars = [];
-
-    while (cursor.current != '\n') {
-      if (cursor.reachedEOF) {
-        lexemeChars.add(cursor.current);
-        break;
-      } else {
-        lexemeChars.add(cursor.current);
-        cursor.advance();
-      }
-    }
-
-    end = cursor.location() + offset;
-
-    return Token(
-      tokenType: MDTokenType.header1(),
-      lexeme: lexemeChars.join(),
-      start: start,
-      end: end,
-    );
-  }
-
-  Token tokeniseBody() {
-    final CursorLocation start = cursor.location() + offset;
-    final CursorLocation end;
-    final List<Char> lexemeChars = [];
-
-    while (cursor.current != '\n') {
-      if (cursor.reachedEOF) {
-        lexemeChars.add(cursor.current);
-        break;
-      } else {
-        lexemeChars.add(cursor.current);
-        cursor.advance();
-      }
-    }
-
-    end = cursor.location() + offset;
-
-    return Token(
-      tokenType: MDTokenType.body(),
-      lexeme: lexemeChars.join(),
-      start: start,
-      end: end,
-    );
+    final CursorLocation eofLoc = CursorLocation(
+        rowNum: cursor.location().rowNum, colNum: cursor.location().colNum + 1);
+    tokens.add(Token(
+      tokenType: TokenType.eof(),
+      lexeme: TokenType.eof().value,
+      start: eofLoc,
+      end: eofLoc,
+    ));
   }
 }
