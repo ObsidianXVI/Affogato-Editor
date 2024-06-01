@@ -1,5 +1,7 @@
 library affogato.editor;
 
+import 'package:affogato_core/affogato_core.dart';
+import 'package:affogato_editor/battery_themes/affogato_classic/theme_bundle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

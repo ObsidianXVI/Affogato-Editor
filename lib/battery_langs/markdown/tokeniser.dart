@@ -1,4 +1,4 @@
-part of affogato.editor.battery.markdown;
+part of affogato.editor.battery.langs.markdown;
 
 class MarkdownTokeniser extends Tokeniser {
   final List<Token> tokens = [];
@@ -11,6 +11,7 @@ class MarkdownTokeniser extends Tokeniser {
     List<Token> precedingTokens = const [],
     List<Token> succeedingTokens = const [],
   }) {
+    tokens.clear();
     cursor = Cursor(source);
 
     if (precedingTokens.isNotEmpty) {
@@ -23,39 +24,38 @@ class MarkdownTokeniser extends Tokeniser {
   }
 
   void tokenisingLoop() {
-    while (!cursor.reachedEOF) {
+    do {
       tokens.add(
         switch (cursor.current) {
           '#' => Token(
-              tokenType: TokenType.numberSign(),
-              lexeme: TokenType.numberSign().value,
+              tokenType: const TokenType.numberSign(),
+              lexeme: const TokenType.numberSign().value,
               start: cursor.location() + offset,
-              end: (cursor..advance()).location() + offset),
+              end: cursor.location() + offset),
           ' ' => Token(
-              tokenType: TokenType.space(),
-              lexeme: TokenType.space().value,
+              tokenType: const TokenType.space(),
+              lexeme: const TokenType.space().value,
               start: cursor.location() + offset,
-              end: (cursor..advance()).location() + offset),
+              end: cursor.location() + offset),
           '\n' => Token(
-              tokenType: TokenType.newline(),
-              lexeme: TokenType.newline().value,
-              start: cursor.location() + offset,
-              end: (cursor..advance()).location() + offset),
+              tokenType: const TokenType.newline(),
+              lexeme: const TokenType.newline().value,
+              start: cursor.location(),
+              end: cursor.location()),
           String() => Token(
-              tokenType: TokenType.string(),
+              tokenType: const TokenType.string(),
               lexeme: cursor.current,
               start: cursor.location() + offset,
-              end: (cursor..advance()).location() + offset),
+              end: cursor.location() + offset),
         },
       );
-    }
-    final CursorLocation eofLoc = CursorLocation(
-        rowNum: cursor.location().rowNum, colNum: cursor.location().colNum + 1);
+    } while (!cursor.advance().isEOF);
+
     tokens.add(Token(
-      tokenType: TokenType.eof(),
-      lexeme: TokenType.eof().value,
-      start: eofLoc,
-      end: eofLoc,
+      tokenType: const TokenType.eof(),
+      lexeme: const TokenType.eof().value,
+      start: cursor.location(),
+      end: cursor.location(),
     ));
   }
 }

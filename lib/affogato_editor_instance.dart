@@ -1,10 +1,14 @@
 part of affogato.editor;
 
 class AffogatoEditorInstance extends StatefulWidget {
+  final LanguageBundle languageBundle;
+  final ThemeBundle<AffogatoRenderToken, AffogatoSyntaxHighlighter> themeBundle;
   final AffogatoEditorConfigs editorConfigs;
 
   const AffogatoEditorInstance({
     required this.editorConfigs,
+    required this.languageBundle,
+    required this.themeBundle,
     super.key,
   });
 
@@ -18,8 +22,11 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
 
   @override
   void initState() {
-    editorFieldController =
-        AffogatoEditorFieldController(editorConfigs: widget.editorConfigs);
+    editorFieldController = AffogatoEditorFieldController(
+      editorConfigs: widget.editorConfigs,
+      languageBundle: widget.languageBundle,
+      themeBundle: widget.themeBundle,
+    );
     super.initState();
   }
 
@@ -88,8 +95,9 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
                           isDense: true,
                           contentPadding: EdgeInsets.all(0),
                         ),
-                        onChanged: (newText) => setState(() {
-                          final Delta delta;
+                        onChanged: (newText) {
+                          setState(() {
+/*                           final Delta delta;
                           if (newText.isNotEmpty) {
                             final int cursorCurrentPos =
                                 editorFieldController.selection.start;
@@ -113,8 +121,9 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
                             deltaInterceptor.handleDelta(
                                 delta, editorFieldController);
                           }
-                          oldText = editorFieldController.text;
-                        }),
+                          oldText = editorFieldController.text; */
+                          });
+                        },
                         controller: editorFieldController,
                         cursorColor: widget.editorConfigs.cursorColor,
                         maxLines:
@@ -129,6 +138,12 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    editorFieldController.dispose();
+    super.dispose();
   }
 }
 

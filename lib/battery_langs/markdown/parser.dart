@@ -1,4 +1,4 @@
-part of affogato.editor.battery.markdown;
+part of affogato.editor.battery.langs.markdown;
 
 class MarkdownParser extends Parser {
   late TokenCursor cursor;
@@ -6,7 +6,7 @@ class MarkdownParser extends Parser {
   @override
   AST parse(List<Token> tokens) {
     cursor = TokenCursor(tokens);
-    const AST ast = AST(nodes: []);
+    AST ast = AST(nodes: []);
 
     while (!cursor.reachedEOF) {
       ast.nodes.add(parseStatement());
@@ -34,8 +34,11 @@ class MarkdownParser extends Parser {
       node.tokens.add(cursor.current);
       cursor.advance();
     }
-    // the final newline
-    cursor.skip();
+
+    if (cursor.current.tokenType == const TokenType.newline()) {
+      node.tokens.add(cursor.current);
+      cursor.skip();
+    }
     return node;
   }
 
@@ -46,16 +49,18 @@ class MarkdownParser extends Parser {
       node.tokens.add(cursor.current);
       cursor.advance();
     }
-    // the final newline
-    cursor.skip();
+    if (cursor.current.tokenType == const TokenType.newline()) {
+      node.tokens.add(cursor.current);
+      cursor.skip();
+    }
     return node;
   }
 }
 
 class HeaderOneNode extends ASTNode {
-  HeaderOneNode() : super('HeaderOneNode');
+  HeaderOneNode() : super('HeaderOneNode', scopes: ['heading']);
 }
 
 class BodyNode extends ASTNode {
-  BodyNode() : super('BodyNode');
+  BodyNode() : super('BodyNode', scopes: ['string']);
 }
