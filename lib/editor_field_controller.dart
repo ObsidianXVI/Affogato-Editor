@@ -31,7 +31,6 @@ class AffogatoEditorFieldController extends TextEditingController {
       final AST newAST = languageBundle.parser.parse(tokens);
       final List<AffogatoRenderToken> renderTokens =
           themeBundle.synaxHighlighter.createRenderTokens(newAST);
-
       return TextSpan(
         style: editorConfigs.defaultTextStyle,
         children: [

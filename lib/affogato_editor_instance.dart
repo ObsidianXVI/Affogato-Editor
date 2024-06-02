@@ -97,31 +97,31 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
                         ),
                         onChanged: (newText) {
                           setState(() {
-/*                           final Delta delta;
-                          if (newText.isNotEmpty) {
-                            final int cursorCurrentPos =
-                                editorFieldController.selection.start;
-                            if (newText.length > oldText.length) {
-                              delta = Delta.insertion(
-                                  char: newText[cursorCurrentPos - 1],
-                                  pos: cursorCurrentPos);
-                            } else if (newText.length < oldText.length) {
-                              delta = Delta.deletion(
-                                  char: oldText[cursorCurrentPos],
-                                  pos: cursorCurrentPos);
+                            final Delta delta;
+                            if (newText.isNotEmpty) {
+                              final int cursorCurrentPos =
+                                  editorFieldController.selection.start;
+                              if (newText.length > oldText.length) {
+                                delta = Delta.insertion(
+                                    char: newText[cursorCurrentPos - 1],
+                                    pos: cursorCurrentPos);
+                              } else if (newText.length < oldText.length) {
+                                delta = Delta.deletion(
+                                    char: oldText[cursorCurrentPos],
+                                    pos: cursorCurrentPos);
+                              } else {
+                                return;
+                              }
                             } else {
                               return;
                             }
-                          } else {
-                            return;
-                          }
 
-                          for (final deltaInterceptor
-                              in widget.editorConfigs.deltaInterceptors) {
-                            deltaInterceptor.handleDelta(
-                                delta, editorFieldController);
-                          }
-                          oldText = editorFieldController.text; */
+                            for (final deltaInterceptor
+                                in widget.editorConfigs.deltaInterceptors) {
+                              deltaInterceptor.handleDelta(
+                                  delta, editorFieldController);
+                            }
+                            oldText = editorFieldController.text;
                           });
                         },
                         controller: editorFieldController,
