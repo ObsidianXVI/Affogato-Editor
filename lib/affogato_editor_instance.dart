@@ -1,8 +1,13 @@
 part of affogato.editor;
 
-class AffogatoEditorInstance extends StatefulWidget {
+const TextStyle editorDefaultStyle = TextStyle(
+  fontFamily: 'IBMPlexMono',
+);
+
+class AffogatoEditorInstance<T extends AffogatoRenderToken,
+    H extends SyntaxHighlighter<T>> extends StatefulWidget {
   final LanguageBundle languageBundle;
-  final ThemeBundle<AffogatoRenderToken, AffogatoSyntaxHighlighter> themeBundle;
+  final ThemeBundle<T, H> themeBundle;
   final AffogatoEditorConfigs editorConfigs;
 
   const AffogatoEditorInstance({
@@ -18,7 +23,6 @@ class AffogatoEditorInstance extends StatefulWidget {
 
 class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
   late final AffogatoEditorFieldController editorFieldController;
-  String oldText = '';
 
   @override
   void initState() {
@@ -44,6 +48,7 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
               (i + 1).toString(),
               textAlign: TextAlign.right,
               style: widget.editorConfigs.defaultTextStyle.copyWith(
+                fontFamily: editorDefaultStyle.fontFamily,
                 color: widget.editorConfigs.defaultTextStyle.color
                     ?.withOpacity(0.4),
               ),
@@ -95,35 +100,6 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
                           isDense: true,
                           contentPadding: EdgeInsets.all(0),
                         ),
-                        onChanged: (newText) {
-                          setState(() {
-                            final Delta delta;
-                            if (newText.isNotEmpty) {
-                              final int cursorCurrentPos =
-                                  editorFieldController.selection.start;
-                              if (newText.length > oldText.length) {
-                                delta = Delta.insertion(
-                                    char: newText[cursorCurrentPos - 1],
-                                    pos: cursorCurrentPos);
-                              } else if (newText.length < oldText.length) {
-                                delta = Delta.deletion(
-                                    char: oldText[cursorCurrentPos],
-                                    pos: cursorCurrentPos);
-                              } else {
-                                return;
-                              }
-                            } else {
-                              return;
-                            }
-
-                            for (final deltaInterceptor
-                                in widget.editorConfigs.deltaInterceptors) {
-                              deltaInterceptor.handleDelta(
-                                  delta, editorFieldController);
-                            }
-                            oldText = editorFieldController.text;
-                          });
-                        },
                         controller: editorFieldController,
                         cursorColor: widget.editorConfigs.cursorColor,
                         maxLines:
