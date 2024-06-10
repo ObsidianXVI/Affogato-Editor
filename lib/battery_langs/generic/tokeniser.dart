@@ -36,11 +36,23 @@ class GenericTokeniser extends Tokeniser {
         }
       }
     } else {
-      tokens.add(Token(
-          tokenType: const TokenType.unkown(),
-          lexeme: source,
-          start: const CursorLocation(rowNum: 0, colNum: 0),
-          end: const CursorLocation(rowNum: 0, colNum: 0)));
+      for (final char in source.chars) {
+        if (char == ' ' || char == '\n') {
+          tokens.add(Token(
+              tokenType: char == ' '
+                  ? const TokenType.space()
+                  : const TokenType.newline(),
+              lexeme: char,
+              start: const CursorLocation(rowNum: 0, colNum: 0),
+              end: const CursorLocation(rowNum: 0, colNum: 0)));
+        } else {
+          tokens.add(Token(
+              tokenType: const TokenType.unkown(),
+              lexeme: char,
+              start: const CursorLocation(rowNum: 0, colNum: 0),
+              end: const CursorLocation(rowNum: 0, colNum: 0)));
+        }
+      }
     }
     tokens.add(Token(
         tokenType: const TokenType.eof(),
