@@ -2,9 +2,9 @@ part of affogato.editor.battery.themes.affogato;
 
 class AffogatoSyntaxHighlighter extends SyntaxHighlighter<AffogatoRenderToken> {
   @override
-  List<AffogatoRenderToken> createRenderTokens(AST ast) {
+  List<AffogatoRenderToken> createRenderTokens(ParseResult result) {
     final List<AffogatoRenderToken> renderTokens = [];
-    for (final node in ast.nodes) {
+    for (final node in result.ast.terminalNodes) {
       if (node.scopes.contains('heading.two') ||
           node.scopes.contains('heading.three')) {
         renderTokens.add(HeaderBoldRenderToken(node));
