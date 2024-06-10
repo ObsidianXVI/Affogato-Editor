@@ -25,7 +25,25 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
+  fonts:
+    - family: IBMPlexMono
+      fonts:
+        - asset: assets/fonts/IBM_Plex_Mono/IBMPlexMono-Thin.ttf
+        - asset: assets/fonts/IBM_Plex_Mono/IBMPlexMono-ThinItalic.ttf
+          style: italic
+        - asset: assets/fonts/IBM_Plex_Mono/IBMPlexMono-Light.ttf
+        - asset: assets/fonts/IBM_Plex_Mono/IBMPlexMono-LightItalic.ttf
+          style: italic
+        - asset: assets/fonts/IBM_Plex_Mono/IBMPlexMono-Regular.ttf
+        - asset: assets/fonts/IBM_Plex_Mono/IBMPlexMono-Italic.ttf
+          style: italic
+        - asset: assets/fonts/IBM_Plex_Mono/IBMPlexMono-Medium.ttf
+        - asset: assets/fonts/IBM_Plex_Mono/IBMPlexMono-MediumItalic.ttf
+          style: italic
+        - asset: assets/fonts/IBM_Plex_Mono/IBMPlexMono-SemiBold.ttf
+        - asset: assets/fonts/IBM_Plex_Mono/IBMPlexMono-SemiBoldItalic.ttf
+          style: italic
+  
   # To add assets to your package, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
