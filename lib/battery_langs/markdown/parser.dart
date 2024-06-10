@@ -1,18 +1,20 @@
 part of affogato.editor.battery.langs.markdown;
 
 class MarkdownParser extends Parser {
+  ParseResult result = ParseResult();
+
   late TokenCursor cursor;
 
   @override
-  AST parse(List<Token> tokens) {
+  ParseResult parse(List<Token> tokens) {
+    result = ParseResult();
     cursor = TokenCursor(tokens);
-    AST ast = AST(nodes: []);
 
     while (!cursor.reachedEOF) {
-      ast.nodes.add(parseStatement());
+      result.ast.nodes.add(parseStatement());
     }
 
-    return ast;
+    return result;
   }
 
   ASTNode parseStatement() {
@@ -54,7 +56,7 @@ class MarkdownParser extends Parser {
 
     if (cursor.current.tokenType == const TokenType.newline()) {
       node.tokens.add(cursor.current);
-      cursor.skip();
+      cursor.advance();
     }
     return node;
   }
@@ -71,7 +73,7 @@ class MarkdownParser extends Parser {
 
     if (cursor.current.tokenType == const TokenType.newline()) {
       node.tokens.add(cursor.current);
-      cursor.skip();
+      cursor.advance();
     }
     return node;
   }
@@ -88,7 +90,7 @@ class MarkdownParser extends Parser {
 
     if (cursor.current.tokenType == const TokenType.newline()) {
       node.tokens.add(cursor.current);
-      cursor.skip();
+      cursor.advance();
     }
     return node;
   }
@@ -102,25 +104,25 @@ class MarkdownParser extends Parser {
     }
     if (cursor.current.tokenType == const TokenType.newline()) {
       node.tokens.add(cursor.current);
-      cursor.skip();
+      cursor.advance();
     }
     return node;
   }
 }
 
-class HeaderOneNode extends ASTNode {
+class HeaderOneNode extends TerminalASTNode {
   HeaderOneNode() : super('HeaderOneNode', scopes: ['heading', 'heading.one']);
 }
 
-class HeaderTwoNode extends ASTNode {
+class HeaderTwoNode extends TerminalASTNode {
   HeaderTwoNode() : super('HeaderTwoNode', scopes: ['heading', 'heading.two']);
 }
 
-class HeaderThreeNode extends ASTNode {
+class HeaderThreeNode extends TerminalASTNode {
   HeaderThreeNode()
       : super('HeaderThreeNode', scopes: ['heading', 'heading.three']);
 }
 
-class BodyNode extends ASTNode {
+class BodyNode extends TerminalASTNode {
   BodyNode() : super('BodyNode', scopes: ['string']);
 }
