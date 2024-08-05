@@ -8,6 +8,7 @@ part './tokeniser.dart';
 part './parser.dart';
 
 final LanguageBundle genericLB = LanguageBundle(
+    bundleName: 'Generic',
     tokeniser: GenericTokeniser(),
     parser: GenericParser(),
     interpreter: GenericInterpreter());

@@ -9,13 +9,16 @@ class AffogatoEditorInstance<T extends AffogatoRenderToken,
   final LanguageBundle languageBundle;
   final ThemeBundle<T, H> themeBundle;
   final AffogatoEditorConfigs editorConfigs;
+  final void Function(EditorInstanceHandle) setEditorAsActive;
+  final EditorInstanceHandle handle;
 
   const AffogatoEditorInstance({
     required this.editorConfigs,
     required this.languageBundle,
     required this.themeBundle,
-    super.key,
-  });
+    required this.setEditorAsActive,
+    required this.handle,
+  }) : super(key: handle);
 
   @override
   State<StatefulWidget> createState() => AffogatoEditorInstanceState();
@@ -59,55 +62,61 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
       ]);
     }
     return Material(
-      child: Center(
-        child: Container(
-          width: widget.editorConfigs.editorWidth,
-          height: widget.editorConfigs.editorHeight,
-          color: widget.editorConfigs.editorBackgroundColor,
-          child: SingleChildScrollView(
-            child: SizedBox(
-              width: widget.editorConfigs.editorWidth,
-              height: widget.editorConfigs.editorHeight,
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: 0,
-                    left: 10,
-                    child: Column(children: lineNumberWidgets),
-                  ),
-                  Positioned(
-                    top: 0,
-                    left: 80,
-                    width: widget.editorConfigs.editorWidth,
-                    height: widget.editorConfigs.editorHeight,
-                    child: KeyboardListener(
-                      focusNode: FocusNode(),
-                      onKeyEvent: (event) {
-                        if (event is KeyDownEvent) {
-                          if (event.logicalKey == LogicalKeyboardKey.tab) {
-                            editorFieldController.text =
-                                editorFieldController.text.insert(
-                                    editorFieldController.selection.start,
-                                    '    ');
-                            setState(() {});
+      child: Focus(
+        onFocusChange: (hasFocus) {
+          hasFocus ? widget.setEditorAsActive(widget.handle) : null;
+        },
+        child: Center(
+          child: Container(
+            width: widget.editorConfigs.editorWidth,
+            height: widget.editorConfigs.editorHeight,
+            color: widget.editorConfigs.editorBackgroundColor,
+            child: SingleChildScrollView(
+              child: SizedBox(
+                width: widget.editorConfigs.editorWidth,
+                height: widget.editorConfigs.editorHeight,
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: 0,
+                      left: 10,
+                      child: Column(children: lineNumberWidgets),
+                    ),
+                    Positioned(
+                      top: 0,
+                      left: 80,
+                      width: widget.editorConfigs.editorWidth,
+                      height: widget.editorConfigs.editorHeight,
+                      child: KeyboardListener(
+                        focusNode: FocusNode(),
+                        onKeyEvent: (event) {
+                          if (event is KeyDownEvent) {
+                            if (event.logicalKey == LogicalKeyboardKey.tab) {
+                              editorFieldController.text =
+                                  editorFieldController.text.insert(
+                                      editorFieldController.selection.start,
+                                      '    ');
+                              setState(() {});
+                            }
                           }
-                        }
-                      },
-                      child: TextField(
-                        autofocus: true,
-                        autocorrect: false,
-                        decoration: const InputDecoration(
-                          isDense: true,
-                          contentPadding: EdgeInsets.all(0),
+                        },
+                        child: TextField(
+                          autofocus: true,
+                          autocorrect: false,
+                          onChanged: (_) => setState(() {}),
+                          decoration: const InputDecoration(
+                            isDense: true,
+                            contentPadding: EdgeInsets.all(0),
+                          ),
+                          controller: editorFieldController,
+                          cursorColor: widget.editorConfigs.cursorColor,
+                          maxLines:
+                              1200, // an arbitrarily large number to make TextField occupy full height of parent
                         ),
-                        controller: editorFieldController,
-                        cursorColor: widget.editorConfigs.cursorColor,
-                        maxLines:
-                            1200, // an arbitrarily large number to make TextField occupy full height of parent
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -126,9 +135,10 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
 class AffogatoEditorConfigs {
   final double editorWidth;
   final double editorHeight;
+  final Color backgroundColor;
   final Color editorBackgroundColor;
   final TextStyle defaultTextStyle;
-  final Color? cursorColor;
+  final Color cursorColor;
   final List<DeltaInterceptor> deltaInterceptors;
 
   const AffogatoEditorConfigs({
@@ -136,7 +146,8 @@ class AffogatoEditorConfigs {
     required this.editorHeight,
     required this.defaultTextStyle,
     this.deltaInterceptors = const [],
-    this.editorBackgroundColor = Colors.transparent,
-    this.cursorColor,
+    this.editorBackgroundColor = afBrown,
+    this.backgroundColor = afLightBrown3,
+    this.cursorColor = afCream,
   });
 }
