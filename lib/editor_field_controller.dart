@@ -5,13 +5,15 @@ class AffogatoEditorFieldController<T extends AffogatoRenderToken,
   final LanguageBundle languageBundle;
   final ThemeBundle<T, H> themeBundle;
   final AffogatoEditorConfigs editorConfigs;
+  final String? content;
   String oldText = '';
 
   AffogatoEditorFieldController({
     required this.editorConfigs,
     required this.languageBundle,
     required this.themeBundle,
-  });
+    this.content,
+  }) : super(text: content);
 
   @override
   set text(String newText) {

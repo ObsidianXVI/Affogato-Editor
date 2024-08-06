@@ -17,11 +17,16 @@ class StatusBar extends StatelessWidget {
       child: Row(
         children: [
           TextButton(
-            onPressed: () {
-              /* ((instanceKey.currentState as AffogatoEditorState)
-                  .activeEditor
-                  .currentState as AffogatoEditorInstanceState); */
-            },
+            onPressed: onLBChanged == null
+                ? null
+                : () {
+                    final currentLB = instanceKey.currentState!.activeEditor
+                        .currentState!.widget.languageBundle.bundleName;
+                    // show dropdown with other options
+
+                    onLBChanged!
+                        .call(currentLB == 'Markdown' ? 'Generic' : 'Markdown');
+                  },
             child: Text(
               (instanceKey.currentState!.activeEditor.currentWidget
                       as AffogatoEditorInstance)

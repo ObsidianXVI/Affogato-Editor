@@ -11,6 +11,7 @@ class AffogatoEditorInstance<T extends AffogatoRenderToken,
   final AffogatoEditorConfigs editorConfigs;
   final void Function(EditorInstanceHandle) setEditorAsActive;
   final EditorInstanceHandle handle;
+  final String? content;
 
   const AffogatoEditorInstance({
     required this.editorConfigs,
@@ -18,6 +19,7 @@ class AffogatoEditorInstance<T extends AffogatoRenderToken,
     required this.themeBundle,
     required this.setEditorAsActive,
     required this.handle,
+    this.content,
   }) : super(key: handle);
 
   @override
@@ -26,6 +28,7 @@ class AffogatoEditorInstance<T extends AffogatoRenderToken,
 
 class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
   late final AffogatoEditorFieldController editorFieldController;
+  final FocusNode editorFieldFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -33,6 +36,7 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
       editorConfigs: widget.editorConfigs,
       languageBundle: widget.languageBundle,
       themeBundle: widget.themeBundle,
+      content: widget.content,
     );
     super.initState();
   }
@@ -61,6 +65,7 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
         const SizedBox(width: 0, height: 4),
       ]);
     }
+
     return Material(
       child: Focus(
         onFocusChange: (hasFocus) {
@@ -70,7 +75,10 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
           child: Container(
             width: widget.editorConfigs.editorWidth,
             height: widget.editorConfigs.editorHeight,
-            color: widget.editorConfigs.editorBackgroundColor,
+            decoration: BoxDecoration(
+              color: widget.editorConfigs.editorBackgroundColor,
+              border: Border.all(color: afLightBrown3),
+            ),
             child: SingleChildScrollView(
               child: SizedBox(
                 width: widget.editorConfigs.editorWidth,
@@ -88,7 +96,7 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
                       width: widget.editorConfigs.editorWidth,
                       height: widget.editorConfigs.editorHeight,
                       child: KeyboardListener(
-                        focusNode: FocusNode(),
+                        focusNode: editorFieldFocusNode,
                         onKeyEvent: (event) {
                           if (event is KeyDownEvent) {
                             if (event.logicalKey == LogicalKeyboardKey.tab) {
@@ -101,9 +109,9 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
                           }
                         },
                         child: TextField(
-                          autofocus: true,
                           autocorrect: false,
                           onChanged: (_) => setState(() {}),
+                          selectionHeightStyle: BoxHeightStyle.max,
                           decoration: const InputDecoration(
                             isDense: true,
                             contentPadding: EdgeInsets.all(0),

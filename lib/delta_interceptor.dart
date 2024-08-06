@@ -60,6 +60,7 @@ class AutoIndentor extends DeltaInterceptor {
   void handleDelta(Delta delta, AffogatoEditorFieldController controller) {
     if (delta.deltaType == DeltaType.insertion &&
         delta.char == '\n' &&
+        delta.pos >= 2 &&
         controller.text[delta.pos - 2] == '{') {
       controller.text = controller.text.insert(delta.pos, '    \n');
       controller.selection = TextSelection.collapsed(offset: delta.pos + 4);
