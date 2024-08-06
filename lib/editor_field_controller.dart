@@ -13,7 +13,8 @@ class AffogatoEditorFieldController<T extends AffogatoRenderToken,
     required this.languageBundle,
     required this.themeBundle,
     this.content,
-  }) : super(text: content);
+  })  : oldText = content ?? '',
+        super(text: content);
 
   @override
   set text(String newText) {
