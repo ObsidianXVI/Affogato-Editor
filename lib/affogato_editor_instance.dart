@@ -29,9 +29,14 @@ class AffogatoEditorInstance<T extends AffogatoRenderToken,
 class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
   late final AffogatoEditorFieldController editorFieldController;
   final FocusNode editorFieldFocusNode = FocusNode();
+  late double width;
+  late double height;
 
   @override
   void initState() {
+    width = widget.editorConfigs.editorWidth;
+    height = widget.editorConfigs.editorHeight;
+
     editorFieldController = AffogatoEditorFieldController(
       editorConfigs: widget.editorConfigs,
       languageBundle: widget.languageBundle,
@@ -73,16 +78,16 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
         },
         child: Center(
           child: Container(
-            width: widget.editorConfigs.editorWidth,
-            height: widget.editorConfigs.editorHeight,
+            width: width,
+            height: height,
             decoration: BoxDecoration(
               color: widget.editorConfigs.editorBackgroundColor,
               border: Border.all(color: afLightBrown3),
             ),
             child: SingleChildScrollView(
               child: SizedBox(
-                width: widget.editorConfigs.editorWidth,
-                height: widget.editorConfigs.editorHeight,
+                width: width,
+                height: height,
                 child: Stack(
                   children: [
                     Positioned(
@@ -93,8 +98,8 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
                     Positioned(
                       top: 0,
                       left: 80,
-                      width: widget.editorConfigs.editorWidth,
-                      height: widget.editorConfigs.editorHeight,
+                      width: width,
+                      height: height,
                       child: KeyboardListener(
                         focusNode: editorFieldFocusNode,
                         onKeyEvent: (event) {

@@ -35,6 +35,26 @@ class StatusBar extends StatelessWidget {
               style: const TextStyle(color: afLightBrown1),
             ),
           ),
+          const SizedBox(width: 20),
+          TextButton(
+            onPressed: () {
+              instanceKey.currentState!.addEditorInstance();
+            },
+            child: const Text(
+              '+',
+              style: TextStyle(color: afLightBrown1),
+            ),
+          ),
+          const SizedBox(width: 8),
+          TextButton(
+            onPressed: () {
+              instanceKey.currentState!.removeEditorInstance();
+            },
+            child: const Text(
+              '-',
+              style: TextStyle(color: afLightBrown1),
+            ),
+          ),
         ],
       ),
     );

@@ -22,13 +22,9 @@ typedef EditorInstanceHandle = GlobalKey<AffogatoEditorInstanceState>;
 final GlobalKey<AffogatoEditorState> instanceKey = GlobalKey();
 
 class AffogatoEditor extends StatefulWidget {
-  final double width;
-  final double height;
   final AffogatoEditorConfigs editorConfigs;
 
   AffogatoEditor({
-    required this.width,
-    required this.height,
     required this.editorConfigs,
   }) : super(key: instanceKey);
 
@@ -44,14 +40,6 @@ class AffogatoEditorState extends State<AffogatoEditor> {
   @override
   void initState() {
     activeEditor = provisionEditorInstance();
-    Future.delayed(
-      const Duration(seconds: 5),
-      () {
-        activeEditor = provisionEditorInstance();
-        resizeEditorInstances();
-        setState(() {});
-      },
-    );
     super.initState();
   }
 
@@ -96,9 +84,11 @@ class AffogatoEditorState extends State<AffogatoEditor> {
       );
 
   void resizeEditorInstances() {
-    instances.clear();
     for (final handle in handles) {
-      instances.add(spawnEditorInstance(handle));
+      if (handle.currentState == null) continue;
+      handle.currentState!
+        ..width = widget.editorConfigs.editorWidth / max(handles.length, 1)
+        ..setState(() {});
     }
   }
 
@@ -116,17 +106,45 @@ class AffogatoEditorState extends State<AffogatoEditor> {
     }
   }
 
+  void addEditorInstance() {
+    activeEditor = provisionEditorInstance();
+    resizeEditorInstances();
+    setState(() {});
+  }
+
+  void removeEditorInstance([EditorInstanceHandle? handle]) {
+    if (instances.length <= 1) return;
+    for (int i = 0; i < handles.length; i++) {
+      if (handles[i] == (handle ?? activeEditor)) {
+        handles.removeAt(i);
+        instances.removeAt(i);
+        if (handle == activeEditor) {
+          activeEditor = handles[i == 0
+              ? i + 1
+              : i == handles.length
+                  ? i - 1
+                  : i];
+        }
+
+        break;
+      }
+    }
+    resizeEditorInstances();
+
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: widget.width,
-      height: widget.height,
+      width: widget.editorConfigs.editorWidth,
+      height: widget.editorConfigs.editorHeight,
       child: Material(
         child: Stack(
           clipBehavior: Clip.hardEdge,
           children: [
             SizedBox(
-              width: widget.width,
+              width: widget.editorConfigs.editorWidth,
               child: Row(
                 children: instances,
               ),
