@@ -11,7 +11,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 part './ui/status_bar.dart';
-part './ui/left_bar.dart';
+part './ui/primary_bar.dart';
+part './ui/editor_file_tab.dart';
+
+part './document_provider/document_provider.dart';
 
 part './affogato_editor_instance.dart';
 part './editor_field_controller.dart';
@@ -37,6 +40,8 @@ class AffogatoEditorState extends State<AffogatoEditor> {
   final List<EditorInstanceHandle> handles = [];
   final List<AffogatoEditorInstance> instances = [];
   late EditorInstanceHandle activeEditor;
+  bool primaryBarExpanded = false;
+
   @override
   void initState() {
     activeEditor = provisionEditorInstance();
@@ -63,17 +68,16 @@ class AffogatoEditorState extends State<AffogatoEditor> {
 
   AffogatoEditorInstance spawnEditorInstance(
     EditorInstanceHandle handle, {
+    AffogatoDocumentProvider? documentProvider,
     LanguageBundle? lb,
-    String? content,
   }) =>
       AffogatoEditorInstance(
         languageBundle: lb ?? genericLB,
         themeBundle: themeBundle,
-        content: content,
+        documentProvider: documentProvider ?? EmptyDocumentProvider(),
         editorConfigs: AffogatoEditorConfigs(
-          editorWidth:
-              widget.editorConfigs.editorWidth / max(handles.length, 1),
-          editorHeight: widget.editorConfigs.editorHeight,
+          editorWidth: availableEditorsWidth(),
+          editorHeight: widget.editorConfigs.editorHeight - 60,
           defaultTextStyle: widget.editorConfigs.defaultTextStyle,
           deltaInterceptors: widget.editorConfigs.deltaInterceptors,
         ),
@@ -87,7 +91,7 @@ class AffogatoEditorState extends State<AffogatoEditor> {
     for (final handle in handles) {
       if (handle.currentState == null) continue;
       handle.currentState!
-        ..width = widget.editorConfigs.editorWidth / max(handles.length, 1)
+        ..width = availableEditorsWidth()
         ..setState(() {});
     }
   }
@@ -134,6 +138,12 @@ class AffogatoEditorState extends State<AffogatoEditor> {
     setState(() {});
   }
 
+  double availableEditorsWidth() {
+    return (widget.editorConfigs.editorWidth -
+            (primaryBarExpanded ? 240 : 50)) /
+        max(handles.length, 1);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -146,7 +156,33 @@ class AffogatoEditorState extends State<AffogatoEditor> {
             SizedBox(
               width: widget.editorConfigs.editorWidth,
               child: Row(
-                children: instances,
+                children: [
+                  PrimaryBar(
+                    expanded: primaryBarExpanded,
+                    onTap: (expanded) {
+                      primaryBarExpanded = !primaryBarExpanded;
+                      resizeEditorInstances();
+                      setState(() {});
+                    },
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          for (final instance in instances)
+                            EditorFileTab(
+                              instance: instance,
+                            ),
+                        ],
+                      ),
+                      Row(
+                        children: instances,
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
             Positioned(
@@ -162,8 +198,8 @@ class AffogatoEditorState extends State<AffogatoEditor> {
                     newHandle: newHandle,
                     newInstance: spawnEditorInstance(
                       newHandle,
-                      content:
-                          activeEditor.currentState!.editorFieldController.text,
+                      documentProvider:
+                          activeEditor.currentState!.widget.documentProvider,
                       lb: switch (newLB) {
                         'Markdown' => markdownLB,
                         'Generic' => genericLB,

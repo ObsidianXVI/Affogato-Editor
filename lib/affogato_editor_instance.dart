@@ -11,15 +11,15 @@ class AffogatoEditorInstance<T extends AffogatoRenderToken,
   final AffogatoEditorConfigs editorConfigs;
   final void Function(EditorInstanceHandle) setEditorAsActive;
   final EditorInstanceHandle handle;
-  final String? content;
+  final AffogatoDocumentProvider documentProvider;
 
   const AffogatoEditorInstance({
     required this.editorConfigs,
     required this.languageBundle,
     required this.themeBundle,
     required this.setEditorAsActive,
+    required this.documentProvider,
     required this.handle,
-    this.content,
   }) : super(key: handle);
 
   @override
@@ -41,7 +41,7 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
       editorConfigs: widget.editorConfigs,
       languageBundle: widget.languageBundle,
       themeBundle: widget.themeBundle,
-      content: widget.content,
+      content: widget.documentProvider.getContents(),
     );
     super.initState();
   }
@@ -82,7 +82,10 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
             height: height,
             decoration: BoxDecoration(
               color: widget.editorConfigs.editorBackgroundColor,
-              border: Border.all(color: afLightBrown3),
+              border: const Border(
+                left: BorderSide(color: afLightBrown3),
+                right: BorderSide(color: afLightBrown3),
+              ),
             ),
             child: SingleChildScrollView(
               child: SizedBox(
