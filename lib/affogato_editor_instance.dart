@@ -8,12 +8,16 @@ class AffogatoEditorInstance<T extends AffogatoRenderToken,
     H extends SyntaxHighlighter<T>> extends StatefulWidget {
   final LanguageBundle languageBundle;
   final ThemeBundle<T, H> themeBundle;
+  final double width;
+  final double height;
   final AffogatoEditorConfigs editorConfigs;
   final void Function(EditorInstanceHandle) setEditorAsActive;
   final EditorInstanceHandle handle;
   final AffogatoDocumentProvider documentProvider;
 
   const AffogatoEditorInstance({
+    required this.width,
+    required this.height,
     required this.editorConfigs,
     required this.languageBundle,
     required this.themeBundle,
@@ -29,14 +33,9 @@ class AffogatoEditorInstance<T extends AffogatoRenderToken,
 class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
   late final AffogatoEditorFieldController editorFieldController;
   final FocusNode editorFieldFocusNode = FocusNode();
-  late double width;
-  late double height;
 
   @override
   void initState() {
-    width = widget.editorConfigs.editorWidth;
-    height = widget.editorConfigs.editorHeight;
-
     editorFieldController = AffogatoEditorFieldController(
       editorConfigs: widget.editorConfigs,
       languageBundle: widget.languageBundle,
@@ -70,7 +69,8 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
         const SizedBox(width: 0, height: 4),
       ]);
     }
-
+    final AffogatoEditorPanelData panelData =
+        AffogatoEditorPanelData.of(context);
     return Material(
       child: Focus(
         onFocusChange: (hasFocus) {
@@ -78,8 +78,8 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
         },
         child: Center(
           child: Container(
-            width: width,
-            height: height,
+            width: panelData.width,
+            height: panelData.height,
             decoration: BoxDecoration(
               color: widget.editorConfigs.editorBackgroundColor,
               border: const Border(
@@ -89,8 +89,8 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
             ),
             child: SingleChildScrollView(
               child: SizedBox(
-                width: width,
-                height: height,
+                width: panelData.width,
+                height: panelData.height,
                 child: Stack(
                   children: [
                     Positioned(
@@ -101,8 +101,8 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
                     Positioned(
                       top: 0,
                       left: 80,
-                      width: width,
-                      height: height,
+                      width: panelData.width,
+                      height: panelData.height,
                       child: KeyboardListener(
                         focusNode: editorFieldFocusNode,
                         onKeyEvent: (event) {
@@ -149,8 +149,6 @@ class AffogatoEditorInstanceState extends State<AffogatoEditorInstance> {
 }
 
 class AffogatoEditorConfigs {
-  final double editorWidth;
-  final double editorHeight;
   final Color backgroundColor;
   final Color editorBackgroundColor;
   final TextStyle defaultTextStyle;
@@ -158,8 +156,6 @@ class AffogatoEditorConfigs {
   final List<DeltaInterceptor> deltaInterceptors;
 
   const AffogatoEditorConfigs({
-    required this.editorWidth,
-    required this.editorHeight,
     required this.defaultTextStyle,
     this.deltaInterceptors = const [],
     this.editorBackgroundColor = afBrown,

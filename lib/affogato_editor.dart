@@ -13,6 +13,7 @@ import 'package:flutter/services.dart';
 part './ui/status_bar.dart';
 part './ui/primary_bar.dart';
 part './ui/editor_file_tab.dart';
+part './ui/editor_panel.dart';
 
 part './document_provider/document_provider.dart';
 
@@ -25,9 +26,13 @@ typedef EditorInstanceHandle = GlobalKey<AffogatoEditorInstanceState>;
 final GlobalKey<AffogatoEditorState> instanceKey = GlobalKey();
 
 class AffogatoEditor extends StatefulWidget {
+  final double width;
+  final double height;
   final AffogatoEditorConfigs editorConfigs;
 
   AffogatoEditor({
+    required this.width,
+    required this.height,
     required this.editorConfigs,
   }) : super(key: instanceKey);
 
@@ -36,22 +41,63 @@ class AffogatoEditor extends StatefulWidget {
 }
 
 class AffogatoEditorState extends State<AffogatoEditor> {
-  // final Map<EditorInstanceHandle, AffogatoEditorInstance> editorInstances = {};
   final List<EditorInstanceHandle> handles = [];
   final List<AffogatoEditorInstance> instances = [];
+  final List<AffogatoEditorPanel> editorPanels = [];
   late EditorInstanceHandle activeEditor;
   bool primaryBarExpanded = false;
 
   @override
   void initState() {
-    activeEditor = provisionEditorInstance();
+    provisionEditorPanel();
     super.initState();
   }
 
-  EditorInstanceHandle provisionEditorInstance() {
+  void provisionEditorPanel() {
+    activeEditor = provisionEditorInstance(
+      width: availableEditorsWidth(true),
+      height: availableEditorsHeight(),
+    );
+    editorPanels.add(
+      AffogatoEditorPanel(
+        width: availableEditorsWidth(true),
+        height: availableEditorsHeight(),
+        instances: [instances.last],
+      ),
+    );
+    resizeEditorPanels();
+    setState(() {});
+  }
+
+  void resizeEditorPanels() {
+    for (int i = 0; i < editorPanels.length; i++) {
+      editorPanels[i] = AffogatoEditorPanel(
+        width: availableEditorsWidth(),
+        height: availableEditorsHeight(),
+        instances: editorPanels[i].instances,
+      );
+    }
+  }
+
+  void removeEditorPanel() {
+    editorPanels.removeLast();
+    activeEditor = instances.last.handle;
+    setState(() {});
+  }
+
+  EditorInstanceHandle provisionEditorInstance({
+    double? width,
+    double? height,
+  }) {
     final EditorInstanceHandle handle = GlobalKey();
     handles.add(handle);
-    instances.add(spawnEditorInstance(handle));
+    instances.add(
+      spawnEditorInstance(
+        handle,
+        width: width,
+        height: height,
+      ),
+    );
 
     return handle;
   }
@@ -68,32 +114,26 @@ class AffogatoEditorState extends State<AffogatoEditor> {
 
   AffogatoEditorInstance spawnEditorInstance(
     EditorInstanceHandle handle, {
+    double? width,
+    double? height,
     AffogatoDocumentProvider? documentProvider,
     LanguageBundle? lb,
-  }) =>
-      AffogatoEditorInstance(
-        languageBundle: lb ?? genericLB,
-        themeBundle: themeBundle,
-        documentProvider: documentProvider ?? EmptyDocumentProvider(),
-        editorConfigs: AffogatoEditorConfigs(
-          editorWidth: availableEditorsWidth(),
-          editorHeight: widget.editorConfigs.editorHeight - 60,
-          defaultTextStyle: widget.editorConfigs.defaultTextStyle,
-          deltaInterceptors: widget.editorConfigs.deltaInterceptors,
-        ),
-        handle: handle,
-        setEditorAsActive: (handle) => setState(() {
-          activeEditor = handle;
-        }),
-      );
-
-  void resizeEditorInstances() {
-    for (final handle in handles) {
-      if (handle.currentState == null) continue;
-      handle.currentState!
-        ..width = availableEditorsWidth()
-        ..setState(() {});
-    }
+  }) {
+    return AffogatoEditorInstance(
+      languageBundle: lb ?? genericLB,
+      themeBundle: themeBundle,
+      documentProvider: documentProvider ?? EmptyDocumentProvider(),
+      width: width ?? availableEditorsWidth(),
+      height: height ?? availableEditorsHeight(),
+      editorConfigs: AffogatoEditorConfigs(
+        defaultTextStyle: widget.editorConfigs.defaultTextStyle,
+        deltaInterceptors: widget.editorConfigs.deltaInterceptors,
+      ),
+      handle: handle,
+      setEditorAsActive: (handle) => setState(() {
+        activeEditor = handle;
+      }),
+    );
   }
 
   void replaceEditorInstance({
@@ -108,12 +148,6 @@ class AffogatoEditorState extends State<AffogatoEditor> {
         return;
       }
     }
-  }
-
-  void addEditorInstance() {
-    activeEditor = provisionEditorInstance();
-    resizeEditorInstances();
-    setState(() {});
   }
 
   void removeEditorInstance([EditorInstanceHandle? handle]) {
@@ -133,54 +167,42 @@ class AffogatoEditorState extends State<AffogatoEditor> {
         break;
       }
     }
-    resizeEditorInstances();
 
     setState(() {});
   }
 
-  double availableEditorsWidth() {
-    return (widget.editorConfigs.editorWidth -
-            (primaryBarExpanded ? 240 : 50)) /
-        max(handles.length, 1);
+  /// Set [creatingNewPanel] to true, if a new panel is being created after this method call
+  double availableEditorsWidth([
+    bool creatingNewPanel = false,
+  ]) {
+    return (widget.width - (primaryBarExpanded ? 240 : 50)) /
+        max(editorPanels.length + (creatingNewPanel ? 1 : 0), 1);
   }
+
+  double availableEditorsHeight() => widget.height;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: widget.editorConfigs.editorWidth,
-      height: widget.editorConfigs.editorHeight,
+      width: widget.width,
+      height: widget.height,
       child: Material(
         child: Stack(
           clipBehavior: Clip.hardEdge,
           children: [
             SizedBox(
-              width: widget.editorConfigs.editorWidth,
+              width: widget.width,
               child: Row(
                 children: [
                   PrimaryBar(
                     expanded: primaryBarExpanded,
                     onTap: (expanded) {
                       primaryBarExpanded = !primaryBarExpanded;
-                      resizeEditorInstances();
                       setState(() {});
                     },
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          for (final instance in instances)
-                            EditorFileTab(
-                              instance: instance,
-                            ),
-                        ],
-                      ),
-                      Row(
-                        children: instances,
-                      ),
-                    ],
+                  Row(
+                    children: editorPanels,
                   ),
                 ],
               ),

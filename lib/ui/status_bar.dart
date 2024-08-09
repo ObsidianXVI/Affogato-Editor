@@ -38,7 +38,7 @@ class StatusBar extends StatelessWidget {
           const SizedBox(width: 20),
           TextButton(
             onPressed: () {
-              instanceKey.currentState!.addEditorInstance();
+              instanceKey.currentState!.provisionEditorPanel();
             },
             child: const Text(
               '+',
@@ -48,7 +48,7 @@ class StatusBar extends StatelessWidget {
           const SizedBox(width: 8),
           TextButton(
             onPressed: () {
-              instanceKey.currentState!.removeEditorInstance();
+              instanceKey.currentState!.removeEditorPanel();
             },
             child: const Text(
               '-',
